@@ -9,6 +9,9 @@ from pygame.locals import (
     K_DOWN,
     K_LEFT,
     K_RIGHT,
+    K_ESCAPE,
+    KEYDOWN,
+    QUIT,
 )
 
 
@@ -27,6 +30,7 @@ class Game:
     time.set_timer(ADD_ENEMY, 250)                                          # timer manages event triggers
     display.set_caption("Defender 2022!")
     db = DatabaseManager.init()
+    running = True
 
     @classmethod
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,
@@ -81,6 +85,16 @@ class Game:
         for entity in cls.ALL_GROUP:
             cls.SCREEN.blit(entity.surf, entity.rect)
         display.flip()
+
+    def event_handler(self, event):
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            self.running = False
+            exit()
+        elif event.type == QUIT:
+            self.running = False
+            exit()
+        elif event.type == self.ADD_ENEMY:
+            self.add_sprite_to_game("Basic Enemy", Enemy)
 
 
 class Player(Game, Sprite):
