@@ -1,5 +1,6 @@
 import random
 from pygame import init, display, time, USEREVENT, FULLSCREEN
+from GameDatabase import DatabaseManager
 from pygame.sprite import Group
 from pygame.sprite import Sprite
 from pygame.surface import Surface
@@ -24,6 +25,8 @@ class Game:
     SCREEN = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
     SCREEN.fill((0, 0, 0))                                                  # background color of the screen
     time.set_timer(ADD_ENEMY, 250)                                          # timer manages event triggers
+    display.set_caption("Defender 2022!")
+    db = DatabaseManager.init()
 
     @classmethod
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,

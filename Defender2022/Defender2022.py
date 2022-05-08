@@ -18,14 +18,13 @@ game.add_sprite_to_game("SpaceShip", Player)
 while running:
     # Look at every event in the queue
     for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            # Was it the Escape key? If so, stop the loop.
-            if event.key == K_ESCAPE:
-                running = False
-
+        if event.type == KEYDOWN and event.key == K_ESCAPE:
+            running = False
+            exit()
         # Did the user click the window close button? If so, stop the loop.
         elif event.type == QUIT:
             running = False
+            exit()
 
         elif event.type == game.ADD_ENEMY:
             game.add_sprite_to_game("Basic Enemy", Enemy)
