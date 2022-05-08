@@ -16,18 +16,18 @@ from pygame.locals import (
 
 
 class Game:
-    init()                                                                  # calling the pygame init method
-    display_info = display.Info()                                           # getting the current display info
-    SCREEN_WIDTH = display_info.current_w                                   # defining constant width from display info
-    SCREEN_HEIGHT = display_info.current_h                                  # defining constant height from display info
-    ADD_ENEMY = USEREVENT + 1                                               # a user event to create enemies
-    SPRITES = {}                                                            # a python dictionary to help track sprites
-    ALL_GROUP = Group()                                                     # group to manage coordinates and event between sprites
-    PLAYER_GROUP = Group()                                                  # this group will hold the player
-    ENEMY_GROUP = Group()                                                   # this group will hold the enemies
+    init()  # calling the pygame init method
+    display_info = display.Info()  # getting the current display info
+    SCREEN_WIDTH = display_info.current_w  # defining constant width from display info
+    SCREEN_HEIGHT = display_info.current_h  # defining constant height from display info
+    ADD_ENEMY = USEREVENT + 1  # a user event to create enemies
+    SPRITES = {}  # a python dictionary to help track sprites
+    ALL_GROUP = Group()  # group to manage coordinates and event between sprites
+    PLAYER_GROUP = Group()  # this group will hold the player
+    ENEMY_GROUP = Group()  # this group will hold the enemies
     SCREEN = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
-    SCREEN.fill((0, 0, 0))                                                  # background color of the screen
-    time.set_timer(ADD_ENEMY, 250)                                          # timer manages event triggers
+    SCREEN.fill((0, 0, 0))  # background color of the screen
+    time.set_timer(ADD_ENEMY, 250)  # timer manages event triggers
     display.set_caption("Defender 2022!")
     db = DatabaseManager.init()
     running = True
@@ -36,7 +36,7 @@ class Game:
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,
                            coordinates: tuple = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)) -> None:
         """
-        This method recieves the Player or Enemy, the initializes it. After that it is added to our
+        This method receives the Player or Enemy, the initializes it. After that it is added to our
         Game class's python dictionary, a corresponding pygame Group, then finally the ALL_GROUP pygame group
         :param sprite_name: string value of the unique name for this particular class
         :param class_object: the Player, or Enemy, or any Sprite class.
@@ -52,7 +52,7 @@ class Game:
             cls.PLAYER_GROUP.add(screen_object)
         elif type(screen_object) == Enemy:
             number = str(len(cls.ENEMY_GROUP))
-            cls.SPRITES[sprite_name+number] = screen_object
+            cls.SPRITES[sprite_name + number] = screen_object
             cls.ENEMY_GROUP.add(screen_object)
         cls.ALL_GROUP.add(screen_object)
 
@@ -86,15 +86,16 @@ class Game:
             cls.SCREEN.blit(entity.surf, entity.rect)
         display.flip()
 
-    def event_handler(self, event):
+    @classmethod
+    def event_handler(cls, event):
         if event.type == KEYDOWN and event.key == K_ESCAPE:
-            self.running = False
+            cls.running = False
             exit()
         elif event.type == QUIT:
-            self.running = False
+            cls.running = False
             exit()
-        elif event.type == self.ADD_ENEMY:
-            self.add_sprite_to_game("Basic Enemy", Enemy)
+        elif event.type == cls.ADD_ENEMY:
+            cls.add_sprite_to_game("Basic Enemy", Enemy)
 
 
 class Player(Game, Sprite):
