@@ -1,6 +1,6 @@
 # Import the pygame module
 import pygame
-from GameFactory import Game, Player, Enemy
+from GameFactory import Game, Player
 
 game = Game()
 game.add_sprite_to_game("SpaceShip", Player)
