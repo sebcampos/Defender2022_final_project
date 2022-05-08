@@ -31,7 +31,6 @@ class Game:
     display.set_caption("Defender 2022!")
     db = DatabaseManager.init()
     running = True
-
     @classmethod
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,
                            coordinates: tuple = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)) -> None:
