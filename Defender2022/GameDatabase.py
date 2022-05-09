@@ -34,10 +34,10 @@ class DatabaseManager:
     @staticmethod
     def find_highest_score(conn=CONN, cursor=CURSOR) -> tuple:
         string = "select"  # TODO replace empty string with sql statement to select highest score in table
-                     # TODO execute sql statment with cursor
-                     # TODO save result of statment into a variable by calling cursor.fetchall()
-                     # TODO commit action with conn
-                     # TODO return result
+                            # TODO execute sql statment with cursor
+                            # TODO save result of statment into a variable by calling cursor.fetchall()
+                            # TODO commit action with conn
+                            # TODO return result
 
 
 atexit.register(DatabaseManager.tear_down)

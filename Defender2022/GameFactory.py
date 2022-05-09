@@ -1,5 +1,7 @@
 import random
-from pygame import init, display, time, USEREVENT, FULLSCREEN
+from Colors import *
+from GameUtils import MouseHandler
+from pygame import init, display, time, event, key, font, mouse, draw, USEREVENT, FULLSCREEN
 from GameDatabase import DatabaseManager
 from pygame.sprite import Group
 from pygame.sprite import Sprite
@@ -12,6 +14,7 @@ from pygame.locals import (
     K_ESCAPE,
     KEYDOWN,
     QUIT,
+    MOUSEBUTTONDOWN
 )
 
 
@@ -20,17 +23,21 @@ class Game:
     display_info = display.Info()  # getting the current display info
     SCREEN_WIDTH = display_info.current_w  # defining constant width from display info
     SCREEN_HEIGHT = display_info.current_h  # defining constant height from display info
+    SCREEN = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
+    SCREEN.fill((0, 0, 0))  # background color of the screen
     ADD_ENEMY = USEREVENT + 1  # a user event to create enemies
     SPRITES = {}  # a python dictionary to help track sprites
     ALL_GROUP = Group()  # group to manage coordinates and event between sprites
     PLAYER_GROUP = Group()  # this group will hold the player
     ENEMY_GROUP = Group()  # this group will hold the enemies
-    SCREEN = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
-    SCREEN.fill((0, 0, 0))  # background color of the screen
-    time.set_timer(ADD_ENEMY, 250)  # timer manages event triggers
-    display.set_caption("Defender 2022!")
+    MENU_CONTINUE_COORDINATES = (SCREEN_WIDTH / 3, SCREEN_HEIGHT / 100 * 90)
+    MENU_CONTINUE_SIZE = (SCREEN_WIDTH/100 * 10, SCREEN_HEIGHT/100 * 10)
+    SCORE = 0
     db = DatabaseManager.init()
-    running = True
+    menu_active = True
+    running = False
+    final_menu_active = False
+
     @classmethod
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,
                            coordinates: tuple = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)) -> None:
@@ -70,7 +77,7 @@ class Game:
         display.flip()
 
     @classmethod
-    def update_game(cls, pressed_keys: tuple) -> None:
+    def update_game(cls, pressed_keys: tuple or bool) -> None:
         """
         This method calls the player class's updated method with the parameter pressed_keys,
         calls the update  method for the ENEMY sprite group, fills the screen, calls the blit method
@@ -86,18 +93,62 @@ class Game:
         display.flip()
 
     @classmethod
-    def event_handler(cls, event):
-        if event.type == KEYDOWN and event.key == K_ESCAPE:
+    def event_handler(cls, e):
+        if e.type == KEYDOWN and e.key == K_ESCAPE:
             cls.running = False
             exit()
-        elif event.type == QUIT:
+        elif e.type == QUIT:
             cls.running = False
             exit()
-        elif event.type == cls.ADD_ENEMY:
+        elif e.type == cls.ADD_ENEMY:
             cls.add_sprite_to_game("Basic Enemy", Enemy)
+        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(cls.MENU_CONTINUE_COORDINATES):
+            cls.menu_active = False
+            cls.running = True
+
+    @classmethod
+    def menu(cls):
+        display.set_caption("Main Menu")
+        small_font = font.SysFont('Corbel', 35)
+        text = small_font.render('Play', True, WHITE)
+        while cls.menu_active:
+            for e in event.get():
+                cls.event_handler(e)
+
+            cls.SCREEN.fill(PURPLE)
+            m = mouse.get_pos()  # stores the (x,y) coordinates into
+
+            # if mouse is hovered on a button it
+            # changes to lighter shade
+            if MouseHandler.hovered_over(cls.MENU_CONTINUE_COORDINATES, cls.MENU_CONTINUE_SIZE):
+                draw.rect(cls.SCREEN, (LIGHTER), [cls.MENU_CONTINUE_COORDINATES[0], cls.MENU_CONTINUE_COORDINATES[1], cls.MENU_CONTINUE_SIZE[0], cls.MENU_CONTINUE_SIZE[1]])
+
+            else:
+                draw.rect(cls.SCREEN, (DARKER), [cls.MENU_CONTINUE_COORDINATES[0], cls.MENU_CONTINUE_COORDINATES[1], cls.MENU_CONTINUE_SIZE[0], cls.MENU_CONTINUE_SIZE[1]])
+
+            # superimposing the text onto our button
+            cls.SCREEN.blit(text, (cls.MENU_CONTINUE_COORDINATES[0], cls.MENU_CONTINUE_COORDINATES[1]))
+            display.flip()
+            # updates the frames of the game
+            display.update()
+
+    @classmethod
+    def main_game(cls):
+        time.set_timer(cls.ADD_ENEMY, 250)  # timer manages event triggers
+        display.set_caption("Defender 2022!")
+        cls.add_sprite_to_game("SpaceShip", Player)
+        while cls.running:
+            for e in event.get():
+                cls.event_handler(e)
+            cls.update_game(key.get_pressed())
+
+    @classmethod
+    def run(cls):
+        cls.menu()
+        cls.main_game()
 
 
-class Player(Game, Sprite):
+class Player(Sprite):
     def __init__(self):
         super().__init__()
         self.surf = Surface((75, 25))
@@ -116,15 +167,15 @@ class Player(Game, Sprite):
             self.rect.move_ip(5, 0)
 
 
-class Enemy(Game, Sprite):
+class Enemy(Sprite):
     def __init__(self):
         super().__init__()
         self.surf = Surface((20, 10))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(
             center=(
-                random.randint(self.SCREEN_WIDTH + 20, self.SCREEN_WIDTH + 100),
-                random.randint(0, self.SCREEN_HEIGHT),
+                random.randint(Game.SCREEN_WIDTH + 20, Game.SCREEN_WIDTH + 100),
+                random.randint(0, Game.SCREEN_HEIGHT),
             )
         )
         self.speed = random.randint(1, 2)
@@ -135,3 +186,4 @@ class Enemy(Game, Sprite):
         self.rect.move_ip(-self.speed, 0)
         if self.rect.right < 0:
             self.kill()
+
