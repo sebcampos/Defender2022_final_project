@@ -1,7 +1,7 @@
 import random
 from Colors import *
-from GameUtils import MouseHandler
-from pygame import init, display, time, event, key, font, mouse, draw, USEREVENT, FULLSCREEN
+from GameUtils import SideScroller, MouseHandler, ContinueButton
+from pygame import init, display, time, event, key, USEREVENT, FULLSCREEN
 from GameDatabase import DatabaseManager
 from pygame.sprite import Group
 from pygame.sprite import Sprite
@@ -24,14 +24,14 @@ class Game:
     SCREEN_WIDTH = display_info.current_w  # defining constant width from display info
     SCREEN_HEIGHT = display_info.current_h  # defining constant height from display info
     SCREEN = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
-    SCREEN.fill((0, 0, 0))  # background color of the screen
+    # SCREEN.fill((0, 0, 0))  # background color of the screen
     ADD_ENEMY = USEREVENT + 1  # a user event to create enemies
     SPRITES = {}  # a python dictionary to help track sprites
     ALL_GROUP = Group()  # group to manage coordinates and event between sprites
     PLAYER_GROUP = Group()  # this group will hold the player
     ENEMY_GROUP = Group()  # this group will hold the enemies
-    MENU_CONTINUE_COORDINATES = (SCREEN_WIDTH / 3, SCREEN_HEIGHT / 100 * 90)
-    MENU_CONTINUE_SIZE = (SCREEN_WIDTH/100 * 10, SCREEN_HEIGHT/100 * 10)
+    ContinueButton.init(SCREEN_WIDTH, SCREEN_HEIGHT)
+    SideScroller.init(SCREEN_WIDTH, SCREEN_HEIGHT)
     SCORE = 0
     db = DatabaseManager.init()
     menu_active = True
@@ -87,7 +87,6 @@ class Game:
         """
         cls.SPRITES["SpaceShip"].update(pressed_keys)
         cls.ENEMY_GROUP.update()
-        cls.SCREEN.fill((0, 0, 0))
         for entity in cls.ALL_GROUP:
             cls.SCREEN.blit(entity.surf, entity.rect)
         display.flip()
@@ -102,42 +101,39 @@ class Game:
             exit()
         elif e.type == cls.ADD_ENEMY:
             cls.add_sprite_to_game("Basic Enemy", Enemy)
-        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(cls.MENU_CONTINUE_COORDINATES):
+        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(ContinueButton.coords, ContinueButton.size):
             cls.menu_active = False
             cls.running = True
 
     @classmethod
     def menu(cls):
         display.set_caption("Main Menu")
-        small_font = font.SysFont('Corbel', 35)
-        text = small_font.render('Play', True, WHITE)
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
-
             cls.SCREEN.fill(PURPLE)
-            m = mouse.get_pos()  # stores the (x,y) coordinates into
-
             # if mouse is hovered on a button it
             # changes to lighter shade
-            if MouseHandler.hovered_over(cls.MENU_CONTINUE_COORDINATES, cls.MENU_CONTINUE_SIZE):
-                draw.rect(cls.SCREEN, (LIGHTER), [cls.MENU_CONTINUE_COORDINATES[0], cls.MENU_CONTINUE_COORDINATES[1], cls.MENU_CONTINUE_SIZE[0], cls.MENU_CONTINUE_SIZE[1]])
-
+            if MouseHandler.hovered_over(ContinueButton.coords, ContinueButton.size):
+                ContinueButton.add(cls.SCREEN, LIGHTER)
             else:
-                draw.rect(cls.SCREEN, (DARKER), [cls.MENU_CONTINUE_COORDINATES[0], cls.MENU_CONTINUE_COORDINATES[1], cls.MENU_CONTINUE_SIZE[0], cls.MENU_CONTINUE_SIZE[1]])
+                ContinueButton.add(cls.SCREEN, DARKER)
 
-            # superimposing the text onto our button
-            cls.SCREEN.blit(text, (cls.MENU_CONTINUE_COORDINATES[0], cls.MENU_CONTINUE_COORDINATES[1]))
+            cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
             display.flip()
             # updates the frames of the game
-            display.update()
+            #display.update()
 
     @classmethod
     def main_game(cls):
-        time.set_timer(cls.ADD_ENEMY, 250)  # timer manages event triggers
+        time.set_timer(cls.ADD_ENEMY, 20 * 1000)  # timer manages event triggers
         display.set_caption("Defender 2022!")
         cls.add_sprite_to_game("SpaceShip", Player)
         while cls.running:
+            cls.SCREEN.blit(SideScroller.background, (SideScroller.bgx, 0))
+            SideScroller.bgx -= 1
+            if SideScroller.bgx <= -cls.SCREEN_WIDTH*2:
+                SideScroller.bgx = 0
             for e in event.get():
                 cls.event_handler(e)
             cls.update_game(key.get_pressed())
@@ -152,7 +148,7 @@ class Player(Sprite):
     def __init__(self):
         super().__init__()
         self.surf = Surface((75, 25))
-        self.surf.fill((255, 255, 255))
+        self.surf.fill(WHITE)
         self.rect = self.surf.get_rect()
         self.parent = None
 

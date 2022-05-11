@@ -1,5 +1,5 @@
 # Import the pygame module
-from GameFactory import Game, Player
+from GameFactory import Game
 
 
 if __name__ == "__main__":
