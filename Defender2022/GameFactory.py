@@ -3,7 +3,7 @@ from Colors import *
 from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget
 from pygame import init, display, time, event, key, USEREVENT, FULLSCREEN
 from pygame.sprite import spritecollideany, spritecollide
-from GameDatabase import DatabaseManager
+from Database import DatabaseManager
 from pygame.sprite import Group, Sprite
 from pygame.surface import Surface
 from pygame.locals import (
@@ -25,7 +25,6 @@ class Game:
     SCREEN_WIDTH = display_info.current_w  # defining constant width from display info
     SCREEN_HEIGHT = display_info.current_h  # defining constant height from display info
     SCREEN = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), FULLSCREEN)
-    # SCREEN.fill((0, 0, 0))  # background color of the screen
     ADD_ENEMY = USEREVENT + 1  # a user event to create enemies
     MOVE_TIME = USEREVENT + 2
     SPRITES = {}  # a python dictionary to help track sprites
@@ -43,7 +42,7 @@ class Game:
 
     @classmethod
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,
-                           coordinates: tuple = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2), args=False) -> None:
+                           coordinates: tuple = (SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2), args=False) -> None:
         """
         This method receives the Player or Enemy, the initializes it. After that it is added to our
         Game class's python dictionary, a corresponding pygame Group, then finally the ALL_GROUP pygame group
@@ -72,20 +71,6 @@ class Game:
             cls.SPRITES[sprite_name + number] = screen_object
             cls.PROJECTILE_GROUP.add(screen_object)
         cls.ALL_GROUP.add(screen_object)
-
-    @classmethod
-    def update_sprite(cls, sprite_name: str, pressed_keys: tuple) -> None:
-        """
-        This method fills the screen <color>, calls the sprite update method by name of sprite and with pressed_keys
-        as the argument, the calls the pygame blit method to bring the sprite to the screen
-        :param sprite_name: string of the sprite name
-        :param pressed_keys: the tuple returned from pygame's get_pressed method
-        :return: void
-        """
-        cls.SCREEN.fill((0, 0, 0))
-        cls.SPRITES[sprite_name].update(pressed_keys)
-        cls.SCREEN.blit(cls.SPRITES[sprite_name].surf, cls.SPRITES[sprite_name].rect)
-        display.flip()
 
     @classmethod
     def update_game(cls, pressed_keys: tuple or bool) -> None:
@@ -119,7 +104,12 @@ class Game:
         display.flip()
 
     @classmethod
-    def event_handler(cls, e):
+    def event_handler(cls, e: event.Event) -> None:
+        """
+        This method receives the `Event` type of the pygame lib and handles user input
+        :param e: Event type of the pygame lib
+        :return: void
+        """
         if e.type == KEYDOWN and e.key == K_ESCAPE:
             cls.running = False
             exit()
@@ -141,7 +131,11 @@ class Game:
             cls.SCORE_MENU.update_time()
 
     @classmethod
-    def menu(cls):
+    def menu(cls) -> None:
+        """
+        This method runs the menu screen
+        :return: void
+        """
         display.set_caption("Main Menu")
         while cls.menu_active:
             for e in event.get():
@@ -158,13 +152,18 @@ class Game:
             display.flip()
 
     @classmethod
-    def main_game(cls):
+    def main_game(cls) -> None:
+        """
+        This method runs the main game
+        :return: void
+        """
         time.set_timer(cls.ADD_ENEMY, 5 * 1000)  # timer manages event triggers
         display.set_caption("Defender 2022!")
         cls.add_sprite_to_game("Player", Player)
         cls.SCORE_MENU = ScoreWidget(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT)
         time.set_timer(cls.MOVE_TIME, 1000)
         while cls.running:
+            print(cls.SPRITES)
             cls.SCREEN.blit(SideScroller.background, (SideScroller.bgx, 0))
             SideScroller.bgx -= 1
             if SideScroller.bgx <= -cls.SCREEN_WIDTH * 2:
@@ -176,13 +175,22 @@ class Game:
             cls.update_game(key.get_pressed())
 
     @classmethod
-    def run(cls):
+    def run(cls) -> None:
+        """
+        This method runs the application in order
+        :return: void
+        """
         cls.menu()
         cls.main_game()
 
 
 class Player(Sprite):
-    def __init__(self):
+    """
+    This class inherits from the pygame Sprite and builds our main player
+    on the screen
+    """
+
+    def __init__(self) -> None:
         super().__init__()
         self.x = 75
         self.y = 25
@@ -192,7 +200,13 @@ class Player(Sprite):
         self.parent = None
         self.forward = True
 
-    def update(self, pressed_keys):
+    def update(self, pressed_keys: tuple or bool) -> None:
+        """
+        This method updates the position of the player
+        based on the keys pressed
+        :param pressed_keys: tuple or bool
+        :return: void
+        """
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
         if pressed_keys[K_DOWN]:
@@ -203,12 +217,21 @@ class Player(Sprite):
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
             self.forward = True
+        # Keep player on the screen
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > Game.SCREEN_WIDTH:
+            self.rect.right = Game.SCREEN_WIDTH
+        if self.rect.top <= 0:
+            self.rect.top = 0
+        if self.rect.bottom >= Game.SCREEN_HEIGHT:
+            self.rect.bottom = Game.SCREEN_HEIGHT
 
 
 class Enemy(Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = Surface((20, 10))
+        self.surf = Surface((50, 50))
         self.surf.fill(WHITE)
         self.forward = random.choice([True, False])
         if self.forward:
@@ -224,7 +247,7 @@ class Enemy(Sprite):
         self.rect = self.surf.get_rect(
             center=center
         )
-        self.speed = random.randint(5, 10)
+        self.speed = random.randint(10, 15)
 
     # Move the sprite based on speed
     # Remove the sprite when it passes the left edge of the screen
@@ -246,7 +269,7 @@ class Projectile(Sprite):
         self.surf = Surface((10, 10))
         self.surf.fill(WHITE)
         self.rect = rect
-        self.speed = 50
+        self.speed = random.randint(50, 80)
 
     def update(self):
         if self.forward:
