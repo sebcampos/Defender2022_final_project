@@ -108,12 +108,21 @@ class ScoreWidget:
 class SideScroller:
     bgx = 0
     background = None
+    level = 1
 
     @classmethod
-    def __init__(cls, screen_width, screen_height):
-        cls.background = image.load("assets" + path.sep + "Level1.jpg")
+    def __init__(cls, screen_width, screen_height, level="Level1.jpg"):
+        cls.background = image.load("assets" + path.sep + level)
         cls.background = transform.scale(cls.background, (screen_width * 3, screen_height))
 
     @classmethod
-    def init(cls, screen_width, screen_height):
-        return cls(screen_width, screen_height)
+    def next_level(cls):
+        if cls.level == 5:
+            cls.level = 1
+            return
+        cls.level += 1
+        return "Level"+str(cls.level)+".jpg"
+
+    @classmethod
+    def init(cls, screen_width, screen_height, level="Level1.jpg"):
+        return cls(screen_width, screen_height, level=level)

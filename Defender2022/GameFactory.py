@@ -168,6 +168,8 @@ class Game:
             SideScroller.bgx -= 1
             if SideScroller.bgx <= -cls.SCREEN_WIDTH * 2:
                 SideScroller.bgx = 0
+                level = SideScroller.next_level()
+                SideScroller.init(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT, level=level)
             for e in event.get():
                 cls.event_handler(e)
             cls.SCREEN.blit(cls.SCORE_MENU.number, cls.SCORE_MENU.number_coords)
