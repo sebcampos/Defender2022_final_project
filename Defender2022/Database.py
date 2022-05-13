@@ -10,7 +10,8 @@ class DatabaseManager:
         self.CURSOR.execute("""
             CREATE TABLE IF NOT EXISTS high_scores (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                name TEXT, 
+                name TEXT,
+                time_score  TEXT, 
                 score INTEGER
             )
         """)
@@ -26,18 +27,18 @@ class DatabaseManager:
         print("db connection closed successfully")
 
     @staticmethod
-    def add_high_score(name: str, score: str, conn=CONN, cursor=CURSOR) -> None:
-        string = f"INSERT INTO high_scores (null, {name}, {score})"
+    def add_high_score(name: str, score: str, time_score: str, conn=CONN, cursor=CURSOR) -> None:
+        string = f"INSERT INTO high_scores (null, {name}, {score}, {time_score})"
         cursor.execute(string)
         conn.commit()
 
     @staticmethod
     def find_highest_score(conn=CONN, cursor=CURSOR) -> tuple:
         string = "select"  # TODO replace empty string with sql statement to select highest score in table
-                            # TODO execute sql statment with cursor
-                            # TODO save result of statment into a variable by calling cursor.fetchall()
-                            # TODO commit action with conn
-                            # TODO return result
+        # TODO execute sql statment with cursor
+        # TODO save result of statment into a variable by calling cursor.fetchall()
+        # TODO commit action with conn
+        # TODO return result
 
 
 atexit.register(DatabaseManager.tear_down)
