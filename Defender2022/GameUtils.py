@@ -1,6 +1,7 @@
 from pygame import mouse, draw, font, image, transform
 from Colors import WHITE
 from os import path
+import time
 
 
 class MouseHandler:
@@ -37,6 +38,7 @@ class ContinueButton:
     small_font = None
     text = None
     text_coords = None
+    foo = None
 
     @classmethod
     def __init__(cls, screen_width, screen_height):
@@ -50,6 +52,7 @@ class ContinueButton:
         cls.small_font = font.SysFont('Corbel', 35)
         cls.text = cls.small_font.render('Play', True, WHITE)
         cls.text_coords = cls.calculate_center(cls.x, cls.x + cls.width, cls.y, cls.y + cls.height)
+        cls.foo = "X"
 
     @classmethod
     def init(cls, screen_width, screen_height):
@@ -67,6 +70,41 @@ class ContinueButton:
         return x, y
 
 
+class ScoreWidget:
+    def __init__(self, screen_width, screen_height):
+        self.coords = (0, 0)
+        self.size = (screen_width, screen_height / 100 * 2)
+        self.x = self.coords[0]
+        self.y = self.coords[1]
+        self.width = self.size[0]
+        self.height = self.size[1]
+        self.height = self.size[1]
+        self.score = 0
+        self.start_time = time.time()
+        self.small_font = font.SysFont('Corbel', 35)
+        self.number = self.small_font.render(str(self.score), True, WHITE)
+        self.number_coords = (screen_width / 100 * 50, screen_height / 100 * 3)
+        self.timer = self.small_font.render("00:00:00", True, WHITE)
+        self.timer_coords = (screen_width / 100 * 90, screen_height / 100 * 3)
+
+    def update_score(self):
+        self.score += 1
+        self.number = self.small_font.render(str(self.score), True, WHITE)
+
+    def update_time(self):
+        end_time = time.time()
+        current_time = self.time_convert(end_time - self.start_time)
+        self.timer = self.small_font.render(current_time, True, WHITE)
+
+    @staticmethod
+    def time_convert(sec):
+        minute = sec // 60
+        sec = sec % 60
+        hours = minute // 60
+        minute = minute % 60
+        return f"{str(int(hours)).rjust(2, '0')}:{str(int(minute)).rjust(2, '0')}:{str(int(sec)).rjust(2,'0')}"
+
+
 class SideScroller:
     bgx = 0
     background = None
@@ -74,7 +112,7 @@ class SideScroller:
     @classmethod
     def __init__(cls, screen_width, screen_height):
         cls.background = image.load("assets" + path.sep + "Level1.jpg")
-        cls.background = transform.scale(cls.background, (screen_width*3, screen_height))
+        cls.background = transform.scale(cls.background, (screen_width * 3, screen_height))
 
     @classmethod
     def init(cls, screen_width, screen_height):
