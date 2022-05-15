@@ -28,7 +28,13 @@ class DatabaseManager:
 
     @staticmethod
     def add_high_score(name: str, score: str, time_score: str, conn=CONN, cursor=CURSOR) -> None:
-        string = f"INSERT INTO high_scores (null, {name}, {score}, {time_score})"
+        name = ''.join(e for e in name if e.isalnum())
+        string = f"""
+            INSERT INTO high_scores (id, name, time_score, score) 
+            VALUES 
+                (null, "{name}", "{time_score}", {score})
+        """
+        print(string)
         cursor.execute(string)
         conn.commit()
 
