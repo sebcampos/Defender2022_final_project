@@ -41,8 +41,8 @@ class DatabaseManager:
     def get_scores(cursor=CURSOR) -> str:
         string = """
             SELECT name, score, time_score from high_scores
-            ORDER BY score
-            LIMIT 10
+            ORDER BY score DESC
+            LIMIT 10;
         """
         cursor.execute(string)
         result = cursor.fetchall()
