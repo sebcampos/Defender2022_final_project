@@ -53,6 +53,42 @@ class TextBox(Rect):
         self.w = max(100, self.text_surface.get_width() + 10)
 
 
+class Title(Rect):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.color_active = Color('lightskyblue3')
+        self.base_font = font.Font(None, 50)
+        self.title_txt = kwargs['text']
+
+    def add(self, screen, color):
+        draw.rect(screen, color, self)
+        if self.title_txt == "":
+            return
+        self.blit_text(screen, self.title_txt, (self.x + 5, self.y + 5), self.base_font)
+        self.w = max(100, screen.get_size()[0] / 2)
+
+    @staticmethod
+    def blit_text(surface, text, pos, font_text, color=Color('black')):
+        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
+        space = font_text.size(' ')[0]  # The width of a space.
+        max_width, max_height = surface.get_size()
+        x, y = pos
+        max_length_line = []
+        for line in words:
+            for word in line:
+                word_surface = font_text.render(word, 0, color)
+                word_width, word_height = word_surface.get_size()
+                max_length_line.append(word_width)
+                if x + word_width >= max_width:
+                    x = pos[0]  # Reset the x.
+                    y += word_height  # Start on new row.
+                surface.blit(word_surface, (x, y))
+                x += word_width + space
+            x = pos[0]  # Reset the x.
+            y += word_height  # Start on new row.
+        return max(max_length_line)
+
+
 class ContinueButton:
     coords = None
     size = None
@@ -77,7 +113,6 @@ class ContinueButton:
         cls.small_font = font.SysFont('Corbel', 35)
         cls.text = cls.small_font.render('Play', True, WHITE)
         cls.text_coords = cls.calculate_center(cls.x, cls.x + cls.width, cls.y, cls.y + cls.height)
-        cls.foo = "X"
 
     @classmethod
     def init(cls, screen_width, screen_height):

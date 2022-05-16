@@ -1,6 +1,6 @@
 import random
 from Colors import *
-from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox
+from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox, Title
 from pygame import init, display, time, event, key, USEREVENT, FULLSCREEN
 from pygame.sprite import spritecollideany, spritecollide
 from Database import DatabaseManager
@@ -41,6 +41,7 @@ class Game:
     menu_active = True
     running = False
     final_menu_active = False
+    clock = time.Clock()
 
     @classmethod
     def add_sprite_to_game(cls, sprite_name: str, class_object: type,
@@ -122,7 +123,7 @@ class Game:
             cls.final_menu_active = False
             cls.menu_active = False
             exit()
-        elif e.type == cls.ADD_ENEMY:
+        elif e.type == cls.ADD_ENEMY and cls.running:
             cls.add_sprite_to_game("Basic Enemy", Enemy)
         elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(ContinueButton.coords, ContinueButton.size):
             cls.menu_active = False
@@ -143,6 +144,9 @@ class Game:
         :return: void
         """
         display.set_caption("Main Menu")
+        scores = cls.db.get_scores()
+        title_text = "High Scores\n" + scores
+        title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_text)
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
@@ -153,7 +157,7 @@ class Game:
                 ContinueButton.add(cls.SCREEN, LIGHTER)
             else:
                 ContinueButton.add(cls.SCREEN, DARKER)
-
+            title.add(cls.SCREEN, PURPLE)
             cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
             display.flip()
 
@@ -181,35 +185,40 @@ class Game:
             cls.SCREEN.blit(cls.SCORE_MENU.number, cls.SCORE_MENU.number_coords)
             cls.SCREEN.blit(cls.SCORE_MENU.timer, cls.SCORE_MENU.timer_coords)
             cls.update_game(key.get_pressed())
+            cls.clock.tick(60)
         cls.final_menu_active = True
 
     @classmethod
     def final_menu(cls):
         display.set_caption("Thanks For Playing!")
+        score = cls.SCORE_MENU.score
+        time_score = cls.SCORE_MENU.time_score
+        title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
+        title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_txt)
         txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 140, 32)
-        clock = time.Clock()
         while cls.final_menu_active:
             for e in event.get():
                 cls.event_handler(e)
                 if e.type == MOUSEBUTTONDOWN and txt.collidepoint(e.pos):
-                    if txt.active:
-                        txt.set_active_status(active=False)
-                    else:
-                        txt.set_active_status()
+                    txt.set_active_status(active=True)
+                elif e.type == MOUSEBUTTONDOWN and not txt.collidepoint(e.pos):
+                    txt.set_active_status(active=False)
+
                 if e.type == KEYDOWN and e.key == K_BACKSPACE and txt.active:
                     txt.user_text = txt.user_text[:-1]
                 elif e.type == KEYDOWN and e.key != K_BACKSPACE and txt.active:
                     txt.user_text += e.unicode
                 if e.type == KEYDOWN and e.key == K_RETURN:
                     name = txt.user_text
-                    score, time_score = cls.SCORE_MENU.score, cls.SCORE_MENU.time_score
-                    cls.db.add_high_score(name, score, time_score)
+                    if name != "":
+                        cls.db.add_high_score(name, score, time_score)
                     cls.final_menu_active = False
                     cls.menu_active = True
             cls.SCREEN.fill(WHITE)
+            title.add(cls.SCREEN, PURPLE)
             txt.add(cls.SCREEN, txt.color)
             display.flip()
-            clock.tick(60)
+            cls.clock.tick(60)
         cls.SPRITES = {}
         cls.run()
 
