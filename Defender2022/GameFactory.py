@@ -319,7 +319,7 @@ class Enemy(Sprite):
         self.rect = self.surf.get_rect(
             center=center
         )
-        self.speed = random.randint(10, 20)
+        self.speed = random.randint(10, 50)
 
     # Move the sprite based on speed
     # Remove the sprite when it passes the left edge of the screen
