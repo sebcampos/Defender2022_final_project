@@ -1,12 +1,14 @@
 import random
+from os import path
 from Colors import *
 from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox, Title, TableWidget
-from pygame import init, display, time, event, key, USEREVENT, FULLSCREEN
+from pygame import init, transform, display, time, event, key, image, USEREVENT, FULLSCREEN
 from pygame.sprite import spritecollideany, spritecollide
 from Database import DatabaseManager
 from pygame.sprite import Group, Sprite
 from pygame.surface import Surface
 from pygame.locals import (
+    RLEACCEL,
     K_UP,
     K_DOWN,
     K_LEFT,
@@ -179,7 +181,6 @@ class Game:
         cls.SCORE_MENU = ScoreWidget(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT)
         time.set_timer(cls.MOVE_TIME, 1000)
         while cls.running:
-            print(cls.SPRITES)
             cls.SCREEN.blit(SideScroller.background, (SideScroller.bgx, 0))
             SideScroller.bgx -= 1
             if SideScroller.bgx <= -cls.SCREEN_WIDTH * 2:
@@ -257,13 +258,12 @@ class Player(Sprite):
         super().__init__()
         self.x = 75
         self.y = 25
-        self.surf = Surface((self.x, self.y))
-        self.surf.fill(WHITE)
+        self.surf = image.load("assets"+path.sep+"spaceship.PNG").convert()
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
         self.parent = None
         self.forward = True
-        self.up = False
-        self.down = False
 
     def update(self, pressed_keys: tuple or bool) -> None:
         """
@@ -274,18 +274,19 @@ class Player(Sprite):
         """
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -6)
-            self.up = True
-            self.down = False
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 6)
-            self.down = True
-            self.up = False
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
+            if self.forward:
+                self.surf = transform.flip(self.surf, True, False)
             self.forward = False
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
+            if not self.forward:
+                self.surf = transform.flip(self.surf, True, False)
             self.forward = True
+
 
         # Keep player on the screen
         if self.rect.left < 0:
@@ -301,8 +302,9 @@ class Player(Sprite):
 class Enemy(Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = Surface((50, 50))
-        self.surf.fill(WHITE)
+        self.surf = image.load("assets"+path.sep+"enemy.PNG").convert()
+        self.surf.set_colorkey(WHITE, RLEACCEL)
+        self.surf = transform.scale(self.surf, (50, 50))
         self.forward = random.choice([True, False])
         if self.forward:
             center = (
@@ -336,10 +338,13 @@ class Projectile(Sprite):
     def __init__(self, forward, rect):
         super().__init__()
         self.forward = forward
-        self.surf = Surface((10, 10))
-        self.surf.fill(WHITE)
+        self.surf = image.load("assets"+path.sep+"projectile.PNG").convert()
+        self.surf.set_colorkey(WHITE, RLEACCEL)
+        self.surf = transform.scale(self.surf, (20, 10))
         self.rect = rect
-        self.speed = random.randint(50, 80)
+        self.speed = 50 # random.randint(50, 80)
+        if not forward:
+            self.surf = transform.flip(self.surf, True, False)
 
     def update(self):
         if self.forward:

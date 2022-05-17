@@ -39,11 +39,9 @@ class TableWidget(Rect):
 
     def add(self, screen, color):
         draw.rect(screen, color, self)
-        print(self.get_size())
-        print(self.x, self.y)
         current_x = self.x + (self.x / 100 * 10)
         increment_x = current_x / 100 * 60
-        current_y = self.y + (self.y)
+        current_y = self.y + self.y
         increment_y = current_y / 100 * 50
         print(self.lst)
         for tup in self.lst:
