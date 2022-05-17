@@ -21,6 +21,9 @@ from pygame.locals import (
     K_RETURN
 )
 
+accel_x = 0
+accel_y = 0
+
 
 class Game:
     init()  # calling the pygame init method
@@ -87,6 +90,7 @@ class Game:
         """
         collided = None
         cls.SPRITES["Player"].update(pressed_keys)
+        cls.SPRITES["Player"].accelerate(pressed_keys)
         cls.ENEMY_GROUP.update()
         cls.PROJECTILE_GROUP.update()
         for entity in cls.ALL_GROUP:
@@ -264,6 +268,84 @@ class Player(Sprite):
         self.rect = self.surf.get_rect()
         self.parent = None
         self.forward = True
+        self.up = False
+        self.down = False
+        self.x_left_accel = 0
+        self.x_right_accel = 0
+        self.y_up_accel = 0
+        self.y_down_accel = 0
+
+    def accelerate(self, pressed_keys: tuple or bool) -> None:
+        """
+        This method updates the position of the player
+        based on the keys pressed
+        :param pressed_keys: tuple or bool
+        :return: void
+        """
+
+        if not (self.y_down_accel < 0) or not (self.y_up_accel < 0) or not (self.x_left_accel < 0) or not (
+                self.x_right_accel < 0):
+            if pressed_keys[K_UP]:
+                self.y_up_accel += -0.175
+                self.rect.move_ip(0, self.y_up_accel)
+                self.up = True
+                self.down = False
+                self.y_down_accel += -0.215
+            if pressed_keys[K_DOWN]:
+                self.y_down_accel += 0.175
+                self.rect.move_ip(0, self.y_down_accel)
+                self.down = True
+                self.up = False
+                self.y_up_accel += 0.215
+            if pressed_keys[K_LEFT]:
+                self.x_left_accel += -0.175
+                self.rect.move_ip(self.x_left_accel, 0)
+                self.forward = False
+                self.x_right_accel += -0.215
+            if pressed_keys[K_RIGHT]:
+                self.x_right_accel += 0.175
+                self.rect.move_ip(self.x_right_accel, 0)
+                self.forward = True
+                self.x_left_accel += 0.215
+        elif not (self.y_down_accel or self.y_up_accel or self.x_left_accel or self.x_right_accel) > 0.8:
+            if pressed_keys[K_UP]:
+                self.y_up_accel += -0.175
+                self.rect.move_ip(0, self.y_up_accel)
+                self.up = True
+                self.down = False
+                self.y_down_accel += -0.215
+            if pressed_keys[K_DOWN]:
+                self.y_down_accel += 0.175
+                self.rect.move_ip(0, self.y_down_accel)
+                self.down = True
+                self.up = False
+                self.y_up_accel += 0.215
+            if pressed_keys[K_LEFT]:
+                self.x_left_accel += -0.175
+                self.rect.move_ip(self.x_left_accel, 0)
+                self.forward = False
+                self.x_right_accel += -0.215
+            if pressed_keys[K_RIGHT]:
+                self.x_right_accel += 0.175
+                self.rect.move_ip(self.x_right_accel, 0)
+                self.forward = True
+                self.x_left_accel += 0.215
+
+        else:
+            if pressed_keys[K_UP]:
+                self.rect.move_ip(0, self.y_up_accel)
+                self.up = True
+                self.down = False
+            if pressed_keys[K_DOWN]:
+                self.rect.move_ip(0, self.y_down_accel)
+                self.down = True
+                self.up = False
+            if pressed_keys[K_LEFT]:
+                self.rect.move_ip(self.x_left_accel, 0)
+                self.forward = False
+            if pressed_keys[K_RIGHT]:
+                self.rect.move_ip(self.x_right_accel, 0)
+                self.forward = True
 
     def update(self, pressed_keys: tuple or bool) -> None:
         """
@@ -272,19 +354,31 @@ class Player(Sprite):
         :param pressed_keys: tuple or bool
         :return: void
         """
+
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -6)
+            y_speed = -6
+            self.rect.move_ip(0, y_speed)
+            self.up = True
+            self.down = False
         if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 6)
+            y_speed = 6
+            self.rect.move_ip(0, y_speed)
+            self.down = True
+            self.up = False
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
             if self.forward:
                 self.surf = transform.flip(self.surf, True, False)
+            x_speed = -6
+            self.rect.move_ip(x_speed, 0)
             self.forward = False
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
             if not self.forward:
                 self.surf = transform.flip(self.surf, True, False)
+            x_speed = 6
+            self.rect.move_ip(x_speed, 0)
             self.forward = True
 
         # Keep player on the screen
