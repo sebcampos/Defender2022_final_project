@@ -1,12 +1,11 @@
 import random
 from os import path
 from Colors import *
-from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox, Title, TableWidget
+from GameUtils import SideScroller, MouseHandler, PlayButton, ScoreWidget, TextBox, Title, TableWidget
 from pygame import init, transform, display, time, event, key, image, USEREVENT, FULLSCREEN
 from pygame.sprite import spritecollideany, spritecollide
 from Database import DatabaseManager
 from pygame.sprite import Group, Sprite
-from pygame.surface import Surface
 from pygame.locals import (
     RLEACCEL,
     K_UP,
@@ -36,7 +35,7 @@ class Game:
     PLAYER_GROUP = Group()  # this group will hold the player
     ENEMY_GROUP = Group()  # this group will hold the enemies
     PROJECTILE_GROUP = Group()
-    ContinueButton.init(SCREEN_WIDTH, SCREEN_HEIGHT)
+    PlayButton.init(SCREEN_WIDTH, SCREEN_HEIGHT)
     SideScroller.init(SCREEN_WIDTH, SCREEN_HEIGHT)
     db = DatabaseManager.init()
     SCORE_MENU = None
@@ -127,7 +126,7 @@ class Game:
             exit()
         elif e.type == cls.ADD_ENEMY and cls.running:
             cls.add_sprite_to_game("Basic Enemy", Enemy)
-        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(ContinueButton.coords, ContinueButton.size):
+        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(PlayButton.coords, PlayButton.size):
             cls.menu_active = False
             cls.running = True
         if e.type == KEYDOWN and e.key == K_SPACE and cls.running:
@@ -153,20 +152,21 @@ class Game:
         width = cls.SCREEN_WIDTH / 2
         height = cls.SCREEN_HEIGHT / 2
         tw = TableWidget(x, y, width, height, data=scores, columns=columns)
-        # title_text = "High Scores\n" + scores
-        # title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_text)
+        title_text = "Press Space to shoot and use arrow keys to move\nPress ESC to quit"
+        title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 70, 100, 100, text=title_text)
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
             cls.SCREEN.fill(ORANGE)
             # if mouse is hovered on a button it
             # changes to lighter shade
-            if MouseHandler.hovered_over(ContinueButton.coords, ContinueButton.size):
-                ContinueButton.add(cls.SCREEN, LIGHTER)
+            if MouseHandler.hovered_over(PlayButton.coords, PlayButton.size):
+                PlayButton.add(cls.SCREEN, LIGHTER)
             else:
-                ContinueButton.add(cls.SCREEN, DARKER)
+                PlayButton.add(cls.SCREEN, DARKER)
             tw.add(cls.SCREEN, RED)
-            cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
+            title.add(cls.SCREEN, LIGHTER)
+            cls.SCREEN.blit(PlayButton.text, PlayButton.text_coords)
             display.flip()
 
     @classmethod
@@ -258,7 +258,7 @@ class Player(Sprite):
         super().__init__()
         self.x = 75
         self.y = 25
-        self.surf = image.load("assets"+path.sep+"spaceship.PNG").convert()
+        self.surf = image.load("assets" + path.sep + "spaceship.PNG").convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
@@ -287,7 +287,6 @@ class Player(Sprite):
                 self.surf = transform.flip(self.surf, True, False)
             self.forward = True
 
-
         # Keep player on the screen
         if self.rect.left < 0:
             self.rect.left = 0
@@ -302,7 +301,7 @@ class Player(Sprite):
 class Enemy(Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = image.load("assets"+path.sep+"enemy.PNG").convert()
+        self.surf = image.load("assets" + path.sep + "enemy.PNG").convert()
         self.surf.set_colorkey(WHITE, RLEACCEL)
         self.surf = transform.scale(self.surf, (50, 50))
         self.forward = random.choice([True, False])
@@ -338,11 +337,11 @@ class Projectile(Sprite):
     def __init__(self, forward, rect):
         super().__init__()
         self.forward = forward
-        self.surf = image.load("assets"+path.sep+"projectile.PNG").convert()
+        self.surf = image.load("assets" + path.sep + "projectile.PNG").convert()
         self.surf.set_colorkey(WHITE, RLEACCEL)
         self.surf = transform.scale(self.surf, (20, 10))
         self.rect = rect
-        self.speed = 50 # random.randint(50, 80)
+        self.speed = 50  # random.randint(50, 80)
         if not forward:
             self.surf = transform.flip(self.surf, True, False)
 

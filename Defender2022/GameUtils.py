@@ -83,7 +83,7 @@ class Title(Rect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
-        self.base_font = font.Font(None, 50)
+        self.base_font = font.SysFont('Corbel', 35)
         self.title_txt = kwargs['text']
 
     def add(self, screen, color):
@@ -102,7 +102,7 @@ class Title(Rect):
         max_length_line = []
         for line in words:
             for word in line:
-                word_surface = font_text.render(word, 0, color)
+                word_surface = font_text.render(word, True, color)
                 word_width, word_height = word_surface.get_size()
                 max_length_line.append(word_width)
                 if x + word_width >= max_width:
@@ -115,7 +115,7 @@ class Title(Rect):
         return max(max_length_line)
 
 
-class ContinueButton:
+class PlayButton:
     coords = None
     size = None
     x = None
@@ -146,7 +146,7 @@ class ContinueButton:
 
     @staticmethod
     def add(screen, color):
-        draw.rect(screen, color, [ContinueButton.x, ContinueButton.y, ContinueButton.width, ContinueButton.height])
+        draw.rect(screen, color, [PlayButton.x, PlayButton.y, PlayButton.width, PlayButton.height])
 
     @staticmethod
     def calculate_center(x1, x2, y1, y2):
