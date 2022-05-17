@@ -42,7 +42,7 @@ class DatabaseManager:
         string = """
             SELECT name, score, time_score from high_scores
             ORDER BY score DESC
-            LIMIT 10;
+            LIMIT 5;
         """
         cursor.execute(string)
         result = cursor.fetchall()

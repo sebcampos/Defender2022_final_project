@@ -1,5 +1,5 @@
 from pygame import mouse, draw, font, image, transform, Rect, Color
-from Colors import WHITE
+from Colors import WHITE, LIGHTER
 from os import path
 import time
 
@@ -43,7 +43,6 @@ class TableWidget(Rect):
         increment_x = current_x / 100 * 60
         current_y = self.y + self.y
         increment_y = current_y / 100 * 50
-        print(self.lst)
         for tup in self.lst:
             for txt in tup:
                 text_surface = self.base_font.render(str(txt), True, WHITE)
@@ -58,17 +57,18 @@ class TextBox(Rect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
-        self.color_passive = Color('chartreuse4')
+        self.color_passive = LIGHTER
         self.color = self.color_passive
         self.text_surface = None
         self.active = False
         self.base_font = font.Font(None, 32)
-        self.user_text = ""
+        self.user_text = "Click here to enter name"
 
     def set_active_status(self, active: bool = True):
         self.active = active
         if self.active:
             self.color = self.color_active
+            self.user_text = ""
         elif not self.active:
             self.color = self.color_passive
 
