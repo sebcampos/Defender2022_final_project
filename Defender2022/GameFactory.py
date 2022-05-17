@@ -1,6 +1,6 @@
 import random
 from Colors import *
-from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox, Title
+from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox, Title, TableWidget
 from pygame import init, display, time, event, key, USEREVENT, FULLSCREEN
 from pygame.sprite import spritecollideany, spritecollide
 from Database import DatabaseManager
@@ -145,8 +145,14 @@ class Game:
         """
         display.set_caption("Main Menu")
         scores = cls.db.get_scores()
-        title_text = "High Scores\n" + scores
-        title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_text)
+        columns = [("Name", "Score", "Time")]
+        x = cls.SCREEN_WIDTH / 100 * 30
+        y = cls.SCREEN_HEIGHT / 100 * 5
+        width = cls.SCREEN_WIDTH / 2
+        height = cls.SCREEN_HEIGHT / 2
+        tw = TableWidget(x, y, width, height, data=scores, columns=columns)
+        # title_text = "High Scores\n" + scores
+        # title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_text)
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
@@ -157,7 +163,7 @@ class Game:
                 ContinueButton.add(cls.SCREEN, LIGHTER)
             else:
                 ContinueButton.add(cls.SCREEN, DARKER)
-            title.add(cls.SCREEN, ORANGE)
+            tw.add(cls.SCREEN, RED)
             cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
             display.flip()
 
@@ -195,7 +201,7 @@ class Game:
         time_score = cls.SCORE_MENU.time_score
         title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
         title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_txt)
-        txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 200, 100)
+        txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 50, 50)
         while cls.final_menu_active:
             for e in event.get():
                 cls.event_handler(e)
@@ -219,8 +225,16 @@ class Game:
             txt.add(cls.SCREEN, txt.color)
             display.flip()
             cls.clock.tick(60)
-        cls.SPRITES = {}
+        cls.reset_groups()
         cls.run()
+
+    @classmethod
+    def reset_groups(cls):
+        cls.SPRITES = {}
+        cls.ALL_GROUP = Group()
+        cls.ENEMY_GROUP = Group()
+        cls.PLAYER_GROUP = Group()
+        cls.PROJECTILE_GROUP = Group()
 
     @classmethod
     def run(cls) -> None:

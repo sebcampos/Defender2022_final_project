@@ -8,3 +8,5 @@ LIGHTER = (170, 170, 170)
 DARKER = (100, 100, 100)
 
 ORANGE = ('orange')
+
+RED = (255, 0, 0)

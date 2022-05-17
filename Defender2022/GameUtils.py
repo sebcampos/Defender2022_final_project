@@ -28,6 +28,34 @@ class MouseHandler:
         return False
 
 
+class TableWidget(Rect):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lst = kwargs['columns'] + kwargs['data']
+        self.base_font = font.Font(None, 32)
+
+    def get_size(self):
+        return self.left, self.top, self.right, self.bottom
+
+    def add(self, screen, color):
+        draw.rect(screen, color, self)
+        print(self.get_size())
+        print(self.x, self.y)
+        current_x = self.x + (self.x / 100 * 10)
+        increment_x = current_x / 100 * 60
+        current_y = self.y + (self.y)
+        increment_y = current_y / 100 * 50
+        print(self.lst)
+        for tup in self.lst:
+            for txt in tup:
+                text_surface = self.base_font.render(str(txt), True, WHITE)
+                # foo = Rect()
+                screen.blit(text_surface, (current_x, current_y))
+                current_x += increment_x
+            current_x = self.x + (self.x / 100 * 10)
+            current_y += increment_y
+
+
 class TextBox(Rect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
