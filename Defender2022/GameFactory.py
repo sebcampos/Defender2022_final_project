@@ -195,7 +195,7 @@ class Game:
         time_score = cls.SCORE_MENU.time_score
         title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
         title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_txt)
-        txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 140, 32)
+        txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 200, 100)
         while cls.final_menu_active:
             for e in event.get():
                 cls.event_handler(e)
