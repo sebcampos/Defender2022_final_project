@@ -24,6 +24,7 @@ from pygame.locals import (
 accel_x = 0
 accel_y = 0
 
+
 class Game:
     init()  # calling the pygame init method
     display_info = display.Info()  # getting the current display info
@@ -282,7 +283,8 @@ class Player(Sprite):
         :return: void
         """
 
-        if not (self.y_down_accel < 0) or not (self.y_up_accel < 0) or not (self.x_left_accel < 0) or not (self.x_right_accel < 0):
+        if not (self.y_down_accel < 0) or not (self.y_up_accel < 0) or not (self.x_left_accel < 0) or not (
+                self.x_right_accel < 0):
             if pressed_keys[K_UP]:
                 self.y_up_accel += -0.175
                 self.rect.move_ip(0, self.y_up_accel)
@@ -344,6 +346,7 @@ class Player(Sprite):
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(self.x_right_accel, 0)
                 self.forward = True
+
     def update(self, pressed_keys: tuple or bool) -> None:
         """
         This method updates the position of the player
