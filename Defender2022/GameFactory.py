@@ -150,14 +150,14 @@ class Game:
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
-            cls.SCREEN.fill(GOLD)
+            cls.SCREEN.fill(ORANGE)
             # if mouse is hovered on a button it
             # changes to lighter shade
             if MouseHandler.hovered_over(ContinueButton.coords, ContinueButton.size):
                 ContinueButton.add(cls.SCREEN, LIGHTER)
             else:
                 ContinueButton.add(cls.SCREEN, DARKER)
-            title.add(cls.SCREEN, GOLD)
+            title.add(cls.SCREEN, ORANGE)
             cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
             display.flip()
 
@@ -215,7 +215,7 @@ class Game:
                     cls.final_menu_active = False
                     cls.menu_active = True
             cls.SCREEN.fill(WHITE)
-            title.add(cls.SCREEN, GOLD)
+            title.add(cls.SCREEN, ORANGE)
             txt.add(cls.SCREEN, txt.color)
             display.flip()
             cls.clock.tick(60)
