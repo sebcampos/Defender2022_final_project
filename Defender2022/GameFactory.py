@@ -150,14 +150,14 @@ class Game:
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
-            cls.SCREEN.fill(PURPLE)
+            cls.SCREEN.fill(GOLD)
             # if mouse is hovered on a button it
             # changes to lighter shade
             if MouseHandler.hovered_over(ContinueButton.coords, ContinueButton.size):
                 ContinueButton.add(cls.SCREEN, LIGHTER)
             else:
                 ContinueButton.add(cls.SCREEN, DARKER)
-            title.add(cls.SCREEN, PURPLE)
+            title.add(cls.SCREEN, GOLD)
             cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
             display.flip()
 
@@ -167,7 +167,7 @@ class Game:
         This method runs the main game
         :return: void
         """
-        time.set_timer(cls.ADD_ENEMY, 5 * 1000)  # timer manages event triggers
+        time.set_timer(cls.ADD_ENEMY, 1 * 1000)  # timer manages event triggers
         display.set_caption("Defender 2022!")
         cls.add_sprite_to_game("Player", Player)
         cls.SCORE_MENU = ScoreWidget(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT)
@@ -215,7 +215,7 @@ class Game:
                     cls.final_menu_active = False
                     cls.menu_active = True
             cls.SCREEN.fill(WHITE)
-            title.add(cls.SCREEN, PURPLE)
+            title.add(cls.SCREEN, GOLD)
             txt.add(cls.SCREEN, txt.color)
             display.flip()
             cls.clock.tick(60)
@@ -259,11 +259,11 @@ class Player(Sprite):
         :return: void
         """
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
+            self.rect.move_ip(0, -6)
             self.up = True
             self.down = False
         if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
+            self.rect.move_ip(0, 6)
             self.down = True
             self.up = False
         if pressed_keys[K_LEFT]:
