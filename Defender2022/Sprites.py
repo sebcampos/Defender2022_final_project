@@ -98,13 +98,13 @@ class Enemy(DefenderSprite):
             )
         elif not self.upward and self.axis == "y":
             center = (
-                -20,
-                random.randint(0, self.SCREEN_WIDTH)
+                random.randint(0, self.SCREEN_WIDTH),
+                random.randint(self.SCREEN_WIDTH + 20, self.SCREEN_WIDTH + 100),
             )
         self.rect = self.surf.get_rect(
             center=center
         )
-        self.speed = random.randint(5, 10)
+        self.speed = random.randint(1, 5)
 
     def update(self):
         """
@@ -124,8 +124,8 @@ class Enemy(DefenderSprite):
             self.kill()
         elif self.rect.left > self.SCREEN_WIDTH and self.forward and self.axis == "x":
             self.kill()
-        elif self.rect.top+20 > self.SCREEN_HEIGHT and not self.upward and self.axis == "y":
-            self.kill()
+        # elif self.rect.top+20 > self.SCREEN_HEIGHT and not self.upward and self.axis == "y":
+        #     self.kill()
         elif self.rect.bottom < -20 and self.upward and self.axis == "y":
             self.kill()
 

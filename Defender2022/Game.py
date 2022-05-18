@@ -97,7 +97,7 @@ class Game(GameConstants, Colors):
             if spritecollide(projectile, self.ENEMY_GROUP, False):
                 projectile.kill()
                 collided.kill()
-        if "player" in kwargs and spritecollideany(kwargs["player"], self.ENEMY_GROUP):
+        if "player" in kwargs and spritecollideany(kwargs["player"], self.ENEMY_GROUP):  # todo make this a class method
             kwargs["player"].kill()
             self.GAME_RUNNING = False
 
