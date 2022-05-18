@@ -30,10 +30,20 @@ class MouseHandler:
 
 class Widget(GameConstants, Rect):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        x = self.SCREEN_WIDTH / 100 * args[0]
+        y = self.SCREEN_HEIGHT / 100 * args[1]
+        width = self.SCREEN_WIDTH / 100 * args[2]
+        height = self.SCREEN_HEIGHT / 100 * args[3]
+        super().__init__(x, y, width, height, **kwargs)
 
     def get_size(self):
         return self.left, self.top, self.right, self.bottom
+
+    def is_over(self):
+        pos = mouse.get_pos()
+        if self.collidepoint(pos[0], pos[1]):
+            return True
+        return False
 
     @staticmethod
     def calculate_center(x1, x2, y1, y2):
@@ -43,28 +53,24 @@ class Widget(GameConstants, Rect):
         return x, y
 
 
-class TableWidget(Rect):
+class TableWidget(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.lst = kwargs['columns'] + kwargs['data']
+        self.lst = [kwargs['columns']] + kwargs['data']
         self.base_font = font.Font(None, 32)
-
-    def get_size(self):
-        return self.left, self.top, self.right, self.bottom
 
     def add(self, screen, color):
         draw.rect(screen, color, self)
-        current_x = self.x + (self.x / 100 * 10)
+        current_x = self.x + (self.x / 100 * 20)
         increment_x = current_x / 100 * 60
         current_y = self.y + self.y
         increment_y = current_y / 100 * 50
         for tup in self.lst:
             for txt in tup:
-                text_surface = self.base_font.render(str(txt), True, WHITE)
-                # foo = Rect()
+                text_surface = self.base_font.render(str(txt), True, Colors.WHITE)
                 screen.blit(text_surface, (current_x, current_y))
                 current_x += increment_x
-            current_x = self.x + (self.x / 100 * 10)
+            current_x = self.x + (self.x / 100 * 20)
             current_y += increment_y
 
 
@@ -72,7 +78,7 @@ class TextBox(Rect, GameConstants):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
-        self.color_passive = self.LIGHTER
+        self.color_passive = Colors.LIGHTER
         self.color = self.color_passive
         self.text_surface = None
         self.active = False
@@ -89,12 +95,12 @@ class TextBox(Rect, GameConstants):
 
     def add(self, screen, color):
         draw.rect(screen, color, self)
-        self.text_surface = self.base_font.render(self.user_text, True, WHITE)
+        self.text_surface = self.base_font.render(self.user_text, True, Colors.WHITE)
         screen.blit(self.text_surface, (self.x + 5, self.y + 5))
         self.w = max(100, self.text_surface.get_width() + 10)
 
 
-class Title(Rect):
+class Title(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
@@ -131,77 +137,75 @@ class Title(Rect):
 
 
 class PlayButton(Widget):
-    def __init__(self):
-        self.coords = (self.SCREEN_WIDTH / 100 * 45, self.SCREEN_HEIGHT / 100 * 90)
-        self.size = (self.SCREEN_WIDTH / 100 * 10, self.SCREEN_WIDTH / 100 * 10)
-        self.x = self.coords[0]
-        self.y = self.coords[1]
-        self.width = self.size[0]
-        self.height = self.size[1]
-        self.height = self.size[1]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.small_font = font.SysFont('Corbel', 35)
-        self.text = self.small_font.render('Play', True, self.WHITE)
+        self.text = self.small_font.render('Play', True, Colors.WHITE)
         self.text_coords = self.calculate_center(self.x, self.x + self.width, self.y, self.y + self.height)
 
     def add(self, screen, color):
-        draw.rect(screen, color, [self.x, self.y, self.width, self.height])
+        draw.rect(screen, color, self)
+        screen.blit(self.text, self.text_coords)
 
-#
-# class ScoreWidget:
-#     def __init__(self, screen_width, screen_height):
-#         self.coords = (0, 0)
-#         self.size = (screen_width, screen_height / 100 * 2)
-#         self.x = self.coords[0]
-#         self.y = self.coords[1]
-#         self.width = self.size[0]
-#         self.height = self.size[1]
-#         self.height = self.size[1]
-#         self.score = 0
-#         self.time_score = None
-#         self.start_time = time.time()
-#         self.small_font = font.SysFont('Corbel', 35)
-#         self.number = self.small_font.render(str(self.score), True, WHITE)
-#         self.number_coords = (screen_width / 100 * 50, screen_height / 100 * 3)
-#         self.timer = self.small_font.render("00:00:00", True, WHITE)
-#         self.timer_coords = (screen_width / 100 * 90, screen_height / 100 * 3)
-#
-#     def update_score(self):
-#         self.score += 1
-#         self.number = self.small_font.render(str(self.score), True, WHITE)
-#
-#     def update_time(self):
-#         end_time = time.time()
-#         current_time = self.time_convert(end_time - self.start_time)
-#         self.time_score = current_time
-#         self.timer = self.small_font.render(current_time, True, WHITE)
-#
-#     @staticmethod
-#     def time_convert(sec):
-#         minute = sec // 60
-#         sec = sec % 60
-#         hours = minute // 60
-#         minute = minute % 60
-#         return f"{str(int(hours)).rjust(2, '0')}:{str(int(minute)).rjust(2, '0')}:{str(int(sec)).rjust(2, '0')}"
-#
-#
-# class SideScroller:
-#     bgx = 0
-#     background = None
-#     level = 1
-#
-#     @classmethod
-#     def __init__(cls, screen_width, screen_height, level="Level1.jpg"):
-#         cls.background = image.load("assets" + path.sep + level)
-#         cls.background = transform.scale(cls.background, (screen_width * 3, screen_height))
-#
-#     @classmethod
-#     def next_level(cls):
-#         if cls.level == 5:
-#             cls.level = 1
-#             return "Level1.jpg"
-#         cls.level += 1
-#         return "Level" + str(cls.level) + ".jpg"
-#
-#     @classmethod
-#     def init(cls, screen_width, screen_height, level="Level1.jpg"):
-#         return cls(screen_width, screen_height, level=level)
+
+class ScoreWidget(Widget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.score = 0
+        self.time_score = None
+        self.start_time = time.time()
+        self.small_font = font.SysFont('Corbel', 35)
+        self.number = self.small_font.render(str(self.score), True, Colors.WHITE)
+        self.number_coords = (self.x / 100 * 50, self.y / 100 * 3)
+        self.timer = self.small_font.render("00:00:00", True, Colors.WHITE)
+        self.timer_coords = (self.x / 100 * 90, self.y / 100 * 3)
+
+    def update_score(self):
+        self.score += 1
+        self.number = self.small_font.render(str(self.score), True, Colors.WHITE)
+
+    def show(self, screen):
+        screen.blit(self.number, self.number_coords)
+        screen.blit(self.timer, self.timer_coords)
+
+    def update_time(self):
+        end_time = time.time()
+        current_time = self.time_convert(end_time - self.start_time)
+        self.time_score = current_time
+        self.timer = self.small_font.render(current_time, True, Colors.WHITE)
+
+    def final_score(self):
+        return self.score, self.time_score
+
+    @staticmethod
+    def time_convert(sec):
+        minute = sec // 60
+        sec = sec % 60
+        hours = minute // 60
+        minute = minute % 60
+        return f"{str(int(hours)).rjust(2, '0')}:{str(int(minute)).rjust(2, '0')}:{str(int(sec)).rjust(2, '0')}"
+
+
+class SideScroller(Widget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bgx = 0
+        self.level = 1
+        self.surf = image.load("assets" + path.sep + "Level1.jpg")
+        self.surf = transform.scale(self.surf, (self.x, self.y))
+
+    def add(self, screen):
+        screen.blit(self.surf, (self.bgx, 0))
+
+    def slide(self):
+        self.bgx -= 1
+        if self.bgx <= -self.SCREEN_WIDTH * 2:
+            self.bgx = 0
+            self.next_level()
+
+    def next_level(self):
+        if self.level == 5:
+            self.level = 1
+            self.surf = image.load("assets" + path.sep + "Level1.jpg")
+        self.level += 1
+        self.surf = image.load("assets" + path.sep + str(self.level) + ".jpg")

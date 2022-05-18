@@ -68,7 +68,7 @@ class GameConstants:
     def reset_game(cls):
         cls.GAME_RUNNING = False
         cls.FINAL_MENU_ACTIVE = False
-        cls.MAIN_MENU_ACTIVE = False
+        cls.MAIN_MENU_ACTIVE = True
 
     @classmethod
     def quit(cls):

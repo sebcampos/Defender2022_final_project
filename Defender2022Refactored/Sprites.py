@@ -1,4 +1,5 @@
 from constants import GameConstants, Colors
+import random
 from os.path import sep
 from pygame import image, transform
 from pygame.sprite import Sprite
@@ -8,13 +9,6 @@ from pygame.locals import (
     K_DOWN,
     K_LEFT,
     K_RIGHT,
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-    MOUSEBUTTONDOWN,
-    K_SPACE,
-    K_BACKSPACE,
-    K_RETURN
 )
 
 
@@ -32,7 +26,6 @@ class Player(GameConstants, Sprite):
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
-        self.parent = None
         self.forward = True
 
     def update(self, pressed_keys: tuple or bool) -> None:
@@ -82,8 +75,8 @@ class Enemy(GameConstants, Sprite):
             )
         elif not self.forward:
             center = (
-                random.randint(Game.SCREEN_WIDTH + 20, self.SCREEN_WIDTH + 100),
-                random.randint(0, Game.SCREEN_HEIGHT),
+                random.randint(self.SCREEN_WIDTH + 20, self.SCREEN_WIDTH + 100),
+                random.randint(0, self.SCREEN_HEIGHT),
             )
         self.rect = self.surf.get_rect(
             center=center

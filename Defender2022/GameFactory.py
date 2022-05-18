@@ -6,6 +6,7 @@ from pygame import init, transform, display, time, event, key, image, USEREVENT,
 from pygame.sprite import spritecollideany, spritecollide
 from Database import DatabaseManager
 from pygame.sprite import Group, Sprite
+from pygame.surface import Surface
 from pygame.locals import (
     RLEACCEL,
     K_UP,
@@ -23,7 +24,6 @@ from pygame.locals import (
 
 accel_x = 0
 accel_y = 0
-
 
 class Game:
     init()  # calling the pygame init method
@@ -283,8 +283,7 @@ class Player(Sprite):
         :return: void
         """
 
-        if not (self.y_down_accel < 0) or not (self.y_up_accel < 0) or not (self.x_left_accel < 0) or not (
-                self.x_right_accel < 0):
+        if not (self.y_down_accel < 0) or not (self.y_up_accel < 0) or not (self.x_left_accel < 0) or not (self.x_right_accel < 0):
             if pressed_keys[K_UP]:
                 self.y_up_accel += -0.175
                 self.rect.move_ip(0, self.y_up_accel)
@@ -346,7 +345,6 @@ class Player(Sprite):
             if pressed_keys[K_RIGHT]:
                 self.rect.move_ip(self.x_right_accel, 0)
                 self.forward = True
-
     def update(self, pressed_keys: tuple or bool) -> None:
         """
         This method updates the position of the player
@@ -431,13 +429,10 @@ class Projectile(Sprite):
     def __init__(self, forward, rect):
         super().__init__()
         self.forward = forward
-        self.surf = image.load("assets" + path.sep + "projectile.PNG").convert()
-        self.surf.set_colorkey(WHITE, RLEACCEL)
-        self.surf = transform.scale(self.surf, (20, 10))
+        self.surf = Surface((10, 10))
+        self.surf.fill(WHITE)
         self.rect = rect
-        self.speed = 50  # random.randint(50, 80)
-        if not forward:
-            self.surf = transform.flip(self.surf, True, False)
+        self.speed = random.randint(50, 80)
 
     def update(self):
         if self.forward:

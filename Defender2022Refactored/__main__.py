@@ -1,3 +1,3 @@
 import Game
 
-Game.Game().menu()
+Game.Game().run()
