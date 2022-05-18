@@ -1,6 +1,6 @@
 from constants import GameConstants, Colors
 from Sprites import Player, Enemy, Projectile
-from Widgets import Title, TableWidget, PlayButton, ScoreWidget, SideScroller, TextBox
+from Widgets import Paragraph, TableWidget, PlayButton, ScoreWidget, SideScroller, InputBox
 from pygame import init, display, time, event, key, USEREVENT
 from pygame.sprite import spritecollideany, spritecollide
 from pygame.sprite import Group
@@ -38,6 +38,9 @@ class Game(GameConstants, Colors):
             player = kwargs['player']
             x = player.rect[0]
             y = player.rect[1]
+            if player.forward:
+                x += 30
+                y += 20
             rect = player.rect.copy()
             forward = player.forward
             self.add_sprite_to_game(Projectile, coordinates=(x, y), forward=forward, rect=rect)
@@ -58,7 +61,7 @@ class Game(GameConstants, Colors):
         else:
             screen_object = class_object(**kwargs)
         if not coordinates:
-            coordinates = (self.SCREEN_WIDTH * 2, self.SCREEN_HEIGHT * 2)
+            coordinates = (self.SCREEN_WIDTH / 100 * 50, self.SCREEN_HEIGHT * 2 / 100 * 50)
         self.SCREEN.blit(screen_object.surf, coordinates)
         if type(screen_object) == Player:
             self.PLAYER_GROUP.add(screen_object)
@@ -105,7 +108,7 @@ class Game(GameConstants, Colors):
         """
         display.set_caption("Main Menu")
         tw = TableWidget(25, 5, 50, 50, data=self.db.get_scores(), columns=("Name", "Score", "Time"))
-        title = Title(25, 70, 50, 10, text="Press Space to shoot and use arrow keys to move\nPress ESC to quit")
+        title = Paragraph(25, 70, 50, 10, text="Press Space to shoot and use arrow keys to move\nPress ESC to quit")
         play_button = PlayButton(45, 90, 10, 10)
         while self.MAIN_MENU_ACTIVE:
             for e in event.get():
@@ -124,7 +127,7 @@ class Game(GameConstants, Colors):
         This method runs the main game
         :return: void
         """
-        time.set_timer(self.ADD_ENEMY, 1 * 1000)  # timer manages event triggers
+        time.set_timer(self.ADD_ENEMY, 1000 // 2)  # timer manages event triggers
         display.set_caption("Defender 2022!")
         player = self.add_sprite_to_game(Player)
         sw = ScoreWidget(100, 20, 1, 1)
@@ -145,8 +148,8 @@ class Game(GameConstants, Colors):
     def final_menu(self, score, time_score):
         display.set_caption("Thanks For Playing!")
         title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
-        title = Title(30, 5, 400, 400, text=title_txt)
-        txt = TextBox(45, 45, 100, 2)
+        title = Paragraph(30, 5, 400, 400, text=title_txt)
+        txt = InputBox(45, 45, 100, 2)
         while self.FINAL_MENU_ACTIVE:
             for e in event.get():
                 self.event_handler(e)

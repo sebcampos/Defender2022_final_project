@@ -1,3 +1,4 @@
-import Game
+from Game import Game
 
-Game.Game().run()
+if __name__ == "__main__":
+    Game().run()

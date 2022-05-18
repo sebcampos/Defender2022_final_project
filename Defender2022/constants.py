@@ -1,4 +1,4 @@
-from pygame import init, quit, display, FULLSCREEN
+from pygame import init, quit, display, font, FULLSCREEN
 from Database import DatabaseManager
 from pygame.locals import (
     RLEACCEL,

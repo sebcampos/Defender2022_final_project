@@ -1,6 +1,6 @@
-from constants import GameConstants, Colors
 import random
 from os.path import sep
+from constants import GameConstants, Colors
 from pygame import image, transform
 from pygame.sprite import Sprite
 from pygame.locals import (
@@ -12,18 +12,23 @@ from pygame.locals import (
 )
 
 
-class Player(GameConstants, Sprite):
+class DefenderSprite(GameConstants, Sprite, Colors):
     """
-    This class inherits from the pygame Sprite and builds our main player
-    on the screen
+    This Class inherits Constants for our game as well as the Sprite Class
+    To build Our Sprites
     """
 
+
+class Player(DefenderSprite):
+    """
+    This Class From the Custom Sprite class is used to build the game player
+    """
     def __init__(self) -> None:
         super().__init__()
-        self.x = 75
-        self.y = 25
+        self.x = self.SCREEN_WIDTH / 100 * 5
+        self.y = self.x / 3
         self.surf = image.load("assets" + sep + "spaceship.PNG").convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey(self.WHITE, RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
         self.forward = True
@@ -61,54 +66,91 @@ class Player(GameConstants, Sprite):
             self.rect.bottom = self.SCREEN_HEIGHT
 
 
-class Enemy(GameConstants, Sprite):
+class Enemy(DefenderSprite):
+    """
+    This class is used to randomly generate enemy sprites along the x and y axis
+    with a random velocity and direction
+    """
     def __init__(self):
         super().__init__()
+        self.x = self.SCREEN_WIDTH / 100 * 2
+        self.y = self.x
         self.surf = image.load("assets" + sep + "enemy.PNG").convert()
-        self.surf.set_colorkey(Colors.WHITE, RLEACCEL)
-        self.surf = transform.scale(self.surf, (50, 50))
+        self.surf.set_colorkey(self.WHITE, RLEACCEL)
+        self.surf = transform.scale(self.surf, (self.x, self.y))
         self.forward = random.choice([True, False])
-        if self.forward:
+        self.upward = random.choice([True, False])
+        self.axis = random.choice(["x", "y"])
+        if self.forward and self.axis == "x":
             center = (
                 -20,
                 random.randint(0, self.SCREEN_HEIGHT),
             )
-        elif not self.forward:
+        elif not self.forward and self.axis == "x":
             center = (
                 random.randint(self.SCREEN_WIDTH + 20, self.SCREEN_WIDTH + 100),
                 random.randint(0, self.SCREEN_HEIGHT),
             )
+        elif self.upward and self.axis == "y":
+            center = (
+                random.randint(0, self.SCREEN_WIDTH),
+                -20,
+            )
+        elif not self.upward and self.axis == "y":
+            center = (
+                -20,
+                random.randint(0, self.SCREEN_WIDTH)
+            )
         self.rect = self.surf.get_rect(
             center=center
         )
-        self.speed = random.randint(10, 50)
+        self.speed = random.randint(5, 10)
 
-    # Move the sprite based on speed
-    # Remove the sprite when it passes the left edge of the screen
     def update(self):
-        if self.forward:
+        """
+        This method moves the Enemy instance up or down the x or y axis
+        at the speed of the instance `speed` attribute
+        :return: void
+        """
+        if self.forward and self.axis == "x":
             self.rect.move_ip(+self.speed, 0)
-        elif not self.forward:
+        elif not self.forward and self.axis == "x":
             self.rect.move_ip(-self.speed, 0)
-        if self.rect.right < 0 and not self.forward:
+        elif self.upward and self.axis == "y":
+            self.rect.move_ip(0, +self.speed)
+        elif not self.upward and self.axis == "y":
+            self.rect.move_ip(0, -self.speed)
+        if self.rect.right < 0 and not self.forward and self.axis == "x":
             self.kill()
-        elif self.rect.left > self.SCREEN_WIDTH and self.forward:
+        elif self.rect.left > self.SCREEN_WIDTH and self.forward and self.axis == "x":
+            self.kill()
+        elif self.rect.top+20 > self.SCREEN_HEIGHT and not self.upward and self.axis == "y":
+            self.kill()
+        elif self.rect.bottom < -20 and self.upward and self.axis == "y":
             self.kill()
 
 
-class Projectile(GameConstants, Sprite):
+class Projectile(DefenderSprite):
+    """
+    This Class represents the projectile that will be shot from the Player isntance's
+    position
+    """
     def __init__(self, forward, rect):
         super().__init__()
         self.forward = forward
         self.surf = image.load("assets" + sep + "projectile.PNG").convert()
-        self.surf.set_colorkey(Colors.WHITE, RLEACCEL)
-        self.surf = transform.scale(self.surf, (20, 10))
+        self.surf.set_colorkey(self.WHITE, RLEACCEL)
+        self.surf = transform.scale(self.surf, (self.SCREEN_WIDTH / 100 * 3, 10))
         self.rect = rect
         self.speed = 50  # random.randint(50, 80)
         if not forward:
             self.surf = transform.flip(self.surf, True, False)
 
     def update(self):
+        """
+        This method moves the projectile defined by the speed attribute forward or backwards along the x axis
+        :return: void
+        """
         if self.forward:
             self.rect.move_ip(+self.speed, 0)
         elif not self.forward:
