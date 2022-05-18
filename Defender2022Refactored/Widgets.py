@@ -74,7 +74,7 @@ class TableWidget(Widget):
             current_y += increment_y
 
 
-class TextBox(Rect, GameConstants):
+class TextBox(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')

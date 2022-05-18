@@ -52,8 +52,8 @@ class GameConstants:
 
     @classmethod
     def continue_to_main_game(cls):
-        cls.MAIN_MENU_ACTIVE = False
         cls.GAME_RUNNING = True
+        cls.MAIN_MENU_ACTIVE = False
 
     @classmethod
     def continue_to_final_menu(cls):

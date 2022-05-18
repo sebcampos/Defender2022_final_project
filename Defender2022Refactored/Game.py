@@ -127,7 +127,7 @@ class Game(GameConstants, Colors):
         time.set_timer(self.ADD_ENEMY, 1 * 1000)  # timer manages event triggers
         display.set_caption("Defender 2022!")
         player = self.add_sprite_to_game(Player)
-        sw = ScoreWidget(100, 2, 1, 1)
+        sw = ScoreWidget(100, 20, 1, 1)
         ss = SideScroller(300, 100, self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
         time.set_timer(self.MOVE_TIME, 1000)
         while self.GAME_RUNNING:
@@ -146,7 +146,7 @@ class Game(GameConstants, Colors):
         display.set_caption("Thanks For Playing!")
         title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
         title = Title(30, 5, 400, 400, text=title_txt)
-        txt = TextBox(50, 50, 50, 50)
+        txt = TextBox(45, 45, 100, 2)
         while self.FINAL_MENU_ACTIVE:
             for e in event.get():
                 self.event_handler(e)
@@ -178,5 +178,6 @@ class Game(GameConstants, Colors):
 
     def run(self):
         self.menu()
+        self.GAME_RUNNING = True
         score, time_score = self.main_game()
         self.final_menu(score, time_score)
