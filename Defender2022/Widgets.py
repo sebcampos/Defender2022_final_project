@@ -214,8 +214,10 @@ class SideScroller(Widget):
             self.next_level()
 
     def next_level(self):
-        if self.level == 5:
+        if self.level == 5 or self.level == 0:
             self.level = 1
             self.surf = image.load("assets" + path.sep + "Level1.jpg")
+            self.surf = transform.scale(self.surf, (self.x, self.y))
         self.level += 1
         self.surf = image.load("assets" + path.sep + "Level"+str(self.level) + ".jpg")
+        self.surf = transform.scale(self.surf, (self.x, self.y))
