@@ -17,7 +17,6 @@ class Game(GameConstants, Colors):
     def __init__(self):
         init()
         self.reset_screen()
-        self.player = None
         self.clock = time.Clock()
 
     def event_handler(self, e: event.Event, **kwargs) -> None:
