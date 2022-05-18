@@ -1,4 +1,4 @@
-from pygame import init, quit, display, FULLSCREEN
+from pygame import init, quit, display, font, FULLSCREEN
 from Database import DatabaseManager
 from pygame.locals import (
     RLEACCEL,
@@ -52,8 +52,8 @@ class GameConstants:
 
     @classmethod
     def continue_to_main_game(cls):
-        cls.MAIN_MENU_ACTIVE = False
         cls.GAME_RUNNING = True
+        cls.MAIN_MENU_ACTIVE = False
 
     @classmethod
     def continue_to_final_menu(cls):
@@ -68,7 +68,7 @@ class GameConstants:
     def reset_game(cls):
         cls.GAME_RUNNING = False
         cls.FINAL_MENU_ACTIVE = False
-        cls.MAIN_MENU_ACTIVE = False
+        cls.MAIN_MENU_ACTIVE = True
 
     @classmethod
     def quit(cls):
