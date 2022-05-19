@@ -129,7 +129,7 @@ class Game(GameConstants, Colors):
         This method runs the main game
         :return: void
         """
-        time.set_timer(self.ADD_ENEMY, 1000 // 2)  # timer manages event triggers
+        time.set_timer(self.ADD_ENEMY, 1000)  # timer manages event triggers
         display.set_caption("Defender 2022!")
         player = self.add_sprite_to_game(Player)
         sw = ScoreWidget(100, 20, 1, 1)
