@@ -32,6 +32,9 @@ class Player(DefenderSprite):
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
         self.forward = True
+        self.accel_x = 0
+        self.max_speed = 3
+        self.x_change = 0
 
     def update(self, pressed_keys: tuple or bool) -> None:
         """
@@ -41,16 +44,20 @@ class Player(DefenderSprite):
         :return: void
         """
         if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -6)
+            self.rect.move_ip(0, -2)
         if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 6)
+            self.rect.move_ip(0, 2)
         if pressed_keys[K_LEFT]:
+            self.accel_x = -.2
             self.rect.move_ip(-5, 0)
+            self.rect.move_ip(self.x_change, 0)
             if self.forward:
                 self.surf = transform.flip(self.surf, True, False)
             self.forward = False
         if pressed_keys[K_RIGHT]:
+            self.accel_x = .2
             self.rect.move_ip(5, 0)
+            self.rect.move_ip(self.x_change, 0)
             if not self.forward:
                 self.surf = transform.flip(self.surf, True, False)
             self.forward = True
