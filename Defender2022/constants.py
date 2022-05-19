@@ -12,7 +12,8 @@ from pygame.locals import (
     MOUSEBUTTONDOWN,
     K_SPACE,
     K_BACKSPACE,
-    K_RETURN
+    K_RETURN,
+    KEYUP
 )
 
 
@@ -49,6 +50,7 @@ class GameConstants:
     K_SPACE = K_SPACE
     K_BACKSPACE = K_BACKSPACE
     K_RETURN = K_RETURN
+    KEYUP = KEYUP
 
     @classmethod
     def continue_to_main_game(cls):

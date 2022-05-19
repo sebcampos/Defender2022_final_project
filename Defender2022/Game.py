@@ -33,6 +33,9 @@ class Game(GameConstants, Colors):
             self.add_sprite_to_game(Enemy)
         elif e.type == self.MOUSEBUTTONDOWN and self.MAIN_MENU_ACTIVE and kwargs["play_button"].is_over():
             self.continue_to_main_game()
+        if e.type == self.KEYUP and e.key in (self.K_LEFT, self.K_RIGHT) and self.GAME_RUNNING:
+            player = kwargs["player"]
+            player.accel_x = 0
         if e.type == self.KEYDOWN and e.key == self.K_SPACE and self.GAME_RUNNING:
             player = kwargs['player']
             x = player.rect[0]
@@ -135,8 +138,13 @@ class Game(GameConstants, Colors):
         while self.GAME_RUNNING:
             ss.add(self.SCREEN)
             ss.slide()
-            for e in event.get():
+            for e in event.get(): # this event handler
                 self.event_handler(e, score_widget=sw, player=player)
+            player.x_change += player.accel_x
+            if abs(player.x_change) >= player.max_speed:
+                player.x_change = player.x_change/abs(player.x_change) * player.max_speed
+            if player.accel_x == 0:
+                player.x_change *= 0.92
             sw.show(self.SCREEN)
             self.update_game(key.get_pressed(), score_widget=sw, player=player)
             display.flip()
