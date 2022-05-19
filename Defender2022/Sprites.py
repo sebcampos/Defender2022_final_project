@@ -27,7 +27,7 @@ class Player(DefenderSprite):
         super().__init__()
         self.x = self.SCREEN_WIDTH / 100 * 5
         self.y = self.x / 3
-        self.surf = image.load("assets" + sep + "spaceship.PNG").convert()
+        self.surf = image.load("Assets" + sep + "spaceship.png").convert()
         self.surf.set_colorkey(self.WHITE, RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
@@ -82,7 +82,7 @@ class Enemy(DefenderSprite):
         super().__init__()
         self.x = self.SCREEN_WIDTH / 100 * 2
         self.y = self.x
-        self.surf = image.load("assets" + sep + "enemy.PNG").convert()
+        self.surf = image.load("Assets" + sep + "enemy.PNG").convert()
         self.surf.set_colorkey(self.WHITE, RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.forward = random.choice([True, False])
@@ -145,7 +145,7 @@ class Projectile(DefenderSprite):
     def __init__(self, forward, rect):
         super().__init__()
         self.forward = forward
-        self.surf = image.load("assets" + sep + "projectile.PNG").convert()
+        self.surf = image.load("Assets" + sep + "projectile.PNG").convert()
         self.surf.set_colorkey(self.WHITE, RLEACCEL)
         self.surf = transform.scale(self.surf, (self.SCREEN_WIDTH / 100 * 3, 10))
         self.rect = rect
