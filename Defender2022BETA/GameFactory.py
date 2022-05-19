@@ -1,12 +1,14 @@
 import random
+from os import path
 from Colors import *
-from GameUtils import SideScroller, MouseHandler, ContinueButton, ScoreWidget, TextBox, Title
-from pygame import init, display, time, event, key, USEREVENT, FULLSCREEN
+from GameUtils import SideScroller, MouseHandler, PlayButton, ScoreWidget, TextBox, Title, TableWidget
+from pygame import init, transform, display, time, event, key, image, USEREVENT, FULLSCREEN
 from pygame.sprite import spritecollideany, spritecollide
 from Database import DatabaseManager
 from pygame.sprite import Group, Sprite
 from pygame.surface import Surface
 from pygame.locals import (
+    RLEACCEL,
     K_UP,
     K_DOWN,
     K_LEFT,
@@ -36,7 +38,7 @@ class Game:
     PLAYER_GROUP = Group()  # this group will hold the player
     ENEMY_GROUP = Group()  # this group will hold the enemies
     PROJECTILE_GROUP = Group()
-    ContinueButton.init(SCREEN_WIDTH, SCREEN_HEIGHT)
+    PlayButton.init(SCREEN_WIDTH, SCREEN_HEIGHT)
     SideScroller.init(SCREEN_WIDTH, SCREEN_HEIGHT)
     db = DatabaseManager.init()
     SCORE_MENU = None
@@ -128,7 +130,7 @@ class Game:
             exit()
         elif e.type == cls.ADD_ENEMY and cls.running:
             cls.add_sprite_to_game("Basic Enemy", Enemy)
-        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(ContinueButton.coords, ContinueButton.size):
+        elif e.type == MOUSEBUTTONDOWN and MouseHandler.clicked_on(PlayButton.coords, PlayButton.size):
             cls.menu_active = False
             cls.running = True
         if e.type == KEYDOWN and e.key == K_SPACE and cls.running:
@@ -148,20 +150,27 @@ class Game:
         """
         display.set_caption("Main Menu")
         scores = cls.db.get_scores()
-        title_text = "High Scores\n" + scores
-        title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_text)
+        columns = [("Name", "Score", "Time")]
+        x = cls.SCREEN_WIDTH / 100 * 30
+        y = cls.SCREEN_HEIGHT / 100 * 5
+        width = cls.SCREEN_WIDTH / 2
+        height = cls.SCREEN_HEIGHT / 2
+        tw = TableWidget(x, y, width, height, data=scores, columns=columns)
+        title_text = "Press Space to shoot and use arrow keys to move\nPress ESC to quit"
+        title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 70, 100, 100, text=title_text)
         while cls.menu_active:
             for e in event.get():
                 cls.event_handler(e)
-            cls.SCREEN.fill(GOLD)
+            cls.SCREEN.fill(ORANGE)
             # if mouse is hovered on a button it
             # changes to lighter shade
-            if MouseHandler.hovered_over(ContinueButton.coords, ContinueButton.size):
-                ContinueButton.add(cls.SCREEN, LIGHTER)
+            if MouseHandler.hovered_over(PlayButton.coords, PlayButton.size):
+                PlayButton.add(cls.SCREEN, LIGHTER)
             else:
-                ContinueButton.add(cls.SCREEN, DARKER)
-            title.add(cls.SCREEN, GOLD)
-            cls.SCREEN.blit(ContinueButton.text, ContinueButton.text_coords)
+                PlayButton.add(cls.SCREEN, DARKER)
+            tw.add(cls.SCREEN, RED)
+            title.add(cls.SCREEN, LIGHTER)
+            cls.SCREEN.blit(PlayButton.text, PlayButton.text_coords)
             display.flip()
 
     @classmethod
@@ -176,7 +185,6 @@ class Game:
         cls.SCORE_MENU = ScoreWidget(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT)
         time.set_timer(cls.MOVE_TIME, 1000)
         while cls.running:
-            print(cls.SPRITES)
             cls.SCREEN.blit(SideScroller.background, (SideScroller.bgx, 0))
             SideScroller.bgx -= 1
             if SideScroller.bgx <= -cls.SCREEN_WIDTH * 2:
@@ -198,7 +206,7 @@ class Game:
         time_score = cls.SCORE_MENU.time_score
         title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
         title = Title(cls.SCREEN_WIDTH / 100 * 30, cls.SCREEN_HEIGHT / 100 * 5, 400, 400, text=title_txt)
-        txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 140, 32)
+        txt = TextBox(cls.SCREEN_WIDTH / 2, cls.SCREEN_HEIGHT / 2, 50, 50)
         while cls.final_menu_active:
             for e in event.get():
                 cls.event_handler(e)
@@ -218,12 +226,20 @@ class Game:
                     cls.final_menu_active = False
                     cls.menu_active = True
             cls.SCREEN.fill(WHITE)
-            title.add(cls.SCREEN, GOLD)
+            title.add(cls.SCREEN, ORANGE)
             txt.add(cls.SCREEN, txt.color)
             display.flip()
             cls.clock.tick(60)
-        cls.SPRITES = {}
+        cls.reset_groups()
         cls.run()
+
+    @classmethod
+    def reset_groups(cls):
+        cls.SPRITES = {}
+        cls.ALL_GROUP = Group()
+        cls.ENEMY_GROUP = Group()
+        cls.PLAYER_GROUP = Group()
+        cls.PROJECTILE_GROUP = Group()
 
     @classmethod
     def run(cls) -> None:
@@ -246,8 +262,9 @@ class Player(Sprite):
         super().__init__()
         self.x = 75
         self.y = 25
-        self.surf = Surface((self.x, self.y))
-        self.surf.fill(WHITE)
+        self.surf = image.load("assets" + path.sep + "spaceship.PNG").convert()
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
         self.parent = None
         self.forward = True
@@ -336,6 +353,7 @@ class Player(Sprite):
         """
 
         if pressed_keys[K_UP]:
+            self.rect.move_ip(0, -6)
             y_speed = -6
             self.rect.move_ip(0, y_speed)
             self.up = True
@@ -346,10 +364,16 @@ class Player(Sprite):
             self.down = True
             self.up = False
         if pressed_keys[K_LEFT]:
+            self.rect.move_ip(-5, 0)
+            if self.forward:
+                self.surf = transform.flip(self.surf, True, False)
             x_speed = -6
             self.rect.move_ip(x_speed, 0)
             self.forward = False
         if pressed_keys[K_RIGHT]:
+            self.rect.move_ip(5, 0)
+            if not self.forward:
+                self.surf = transform.flip(self.surf, True, False)
             x_speed = 6
             self.rect.move_ip(x_speed, 0)
             self.forward = True
@@ -368,8 +392,9 @@ class Player(Sprite):
 class Enemy(Sprite):
     def __init__(self):
         super().__init__()
-        self.surf = Surface((50, 50))
-        self.surf.fill(WHITE)
+        self.surf = image.load("assets" + path.sep + "enemy.PNG").convert()
+        self.surf.set_colorkey(WHITE, RLEACCEL)
+        self.surf = transform.scale(self.surf, (50, 50))
         self.forward = random.choice([True, False])
         if self.forward:
             center = (
@@ -384,7 +409,7 @@ class Enemy(Sprite):
         self.rect = self.surf.get_rect(
             center=center
         )
-        self.speed = random.randint(10, 15)
+        self.speed = random.randint(10, 50)
 
     # Move the sprite based on speed
     # Remove the sprite when it passes the left edge of the screen

@@ -38,38 +38,15 @@ class DatabaseManager:
         conn.commit()
 
     @staticmethod
-    def get_scores(cursor=CURSOR) -> str:
+    def get_scores(cursor=CURSOR) -> tuple:
         string = """
             SELECT name, score, time_score from high_scores
             ORDER BY score DESC
-            LIMIT 10;
+            LIMIT 5;
         """
         cursor.execute(string)
         result = cursor.fetchall()
-        max_length = 0
-        for tup in result:
-            for val in tup:
-                length = len(str(val))
-                if length > max_length:
-                    max_length = length
-        final_string = "_"*max_length*3+"\n|"
-        row_length = len(final_string)
-        for column in ["Name", "Score", "Time"]:
-            spacer = row_length - len(column)
-            final_string += column+(" "*spacer)+"|"
-        final_string += "\n"+"-"*max_length*3+"\n"
-        for tup in result:
-            mini_string = "|"
-            for val in tup:
-                val_str = str(val)
-                spacer = row_length - len(val_str) - 2
-                print(max_length)
-                print(len(val_str), spacer)
-                mini_string += val_str+(" "*spacer)+"|"
-                print(len(mini_string))
-            final_string += mini_string+"\n"+"_"*max_length*3+"\n"
-
-        return final_string
+        return result
 
 
 atexit.register(DatabaseManager.tear_down)

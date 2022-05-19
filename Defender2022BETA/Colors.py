@@ -7,4 +7,6 @@ LIGHTER = (170, 170, 170)
 # dark shade of the button
 DARKER = (100, 100, 100)
 
-GOLD = ('orange')
+ORANGE = ('orange')
+
+RED = (255, 0, 0)

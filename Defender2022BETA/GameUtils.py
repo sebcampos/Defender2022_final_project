@@ -1,5 +1,5 @@
 from pygame import mouse, draw, font, image, transform, Rect, Color
-from Colors import WHITE
+from Colors import WHITE, LIGHTER
 from os import path
 import time
 
@@ -28,21 +28,47 @@ class MouseHandler:
         return False
 
 
+class TableWidget(Rect):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.lst = kwargs['columns'] + kwargs['data']
+        self.base_font = font.Font(None, 32)
+
+    def get_size(self):
+        return self.left, self.top, self.right, self.bottom
+
+    def add(self, screen, color):
+        draw.rect(screen, color, self)
+        current_x = self.x + (self.x / 100 * 10)
+        increment_x = current_x / 100 * 60
+        current_y = self.y + self.y
+        increment_y = current_y / 100 * 50
+        for tup in self.lst:
+            for txt in tup:
+                text_surface = self.base_font.render(str(txt), True, WHITE)
+                # foo = Rect()
+                screen.blit(text_surface, (current_x, current_y))
+                current_x += increment_x
+            current_x = self.x + (self.x / 100 * 10)
+            current_y += increment_y
+
+
 class TextBox(Rect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
-        self.color_passive = Color('chartreuse4')
+        self.color_passive = LIGHTER
         self.color = self.color_passive
         self.text_surface = None
         self.active = False
         self.base_font = font.Font(None, 32)
-        self.user_text = ""
+        self.user_text = "Click here to enter name"
 
     def set_active_status(self, active: bool = True):
         self.active = active
         if self.active:
             self.color = self.color_active
+            self.user_text = ""
         elif not self.active:
             self.color = self.color_passive
 
@@ -57,7 +83,7 @@ class Title(Rect):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
-        self.base_font = font.Font(None, 50)
+        self.base_font = font.SysFont('Corbel', 35)
         self.title_txt = kwargs['text']
 
     def add(self, screen, color):
@@ -76,7 +102,7 @@ class Title(Rect):
         max_length_line = []
         for line in words:
             for word in line:
-                word_surface = font_text.render(word, 0, color)
+                word_surface = font_text.render(word, True, color)
                 word_width, word_height = word_surface.get_size()
                 max_length_line.append(word_width)
                 if x + word_width >= max_width:
@@ -89,7 +115,7 @@ class Title(Rect):
         return max(max_length_line)
 
 
-class ContinueButton:
+class PlayButton:
     coords = None
     size = None
     x = None
@@ -120,7 +146,7 @@ class ContinueButton:
 
     @staticmethod
     def add(screen, color):
-        draw.rect(screen, color, [ContinueButton.x, ContinueButton.y, ContinueButton.width, ContinueButton.height])
+        draw.rect(screen, color, [PlayButton.x, PlayButton.y, PlayButton.width, PlayButton.height])
 
     @staticmethod
     def calculate_center(x1, x2, y1, y2):
