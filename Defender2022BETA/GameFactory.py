@@ -329,7 +329,6 @@ class Player(Sprite):
                 self.rect.move_ip(self.x_right_accel, 0)
                 self.forward = True
                 self.x_left_accel += 0.215
-
         else:
             if pressed_keys[K_UP]:
                 self.rect.move_ip(0, self.y_up_accel)
