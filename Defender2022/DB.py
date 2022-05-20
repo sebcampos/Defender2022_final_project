@@ -38,7 +38,7 @@ class DatabaseManager:
         conn.commit()
 
     @staticmethod
-    def get_scores(cursor=CURSOR) -> tuple:
+    def get_scores(cursor=CURSOR) -> list:
         string = """
             SELECT name, score, time_score from high_scores
             ORDER BY score DESC

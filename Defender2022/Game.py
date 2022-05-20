@@ -115,7 +115,7 @@ class Game(GameConstants, Colors):
         while self.MAIN_MENU_ACTIVE:
             for e in event.get():
                 self.event_handler(e, play_button=play_button)
-            self.SCREEN.fill(self.ORANGE)
+            self.SCREEN.blit(self.MENU_IMAGE, (0, 0))
             if play_button.is_over():
                 play_button.add(self.SCREEN, self.LIGHTER)
             else:

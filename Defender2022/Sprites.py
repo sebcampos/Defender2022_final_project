@@ -3,13 +3,6 @@ from os.path import sep
 from constants import GameConstants, Colors
 from pygame import image, transform
 from pygame.sprite import Sprite
-from pygame.locals import (
-    RLEACCEL,
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-)
 
 
 class DefenderSprite(GameConstants, Sprite, Colors):
@@ -28,7 +21,7 @@ class Player(DefenderSprite):
         self.x = self.SCREEN_WIDTH / 100 * 5
         self.y = self.x / 3
         self.surf = image.load("Assets" + sep + "spaceship.png").convert()
-        self.surf.set_colorkey(self.WHITE, RLEACCEL)
+        self.surf.set_colorkey(self.WHITE, self.RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.rect = self.surf.get_rect()
         self.forward = True
@@ -43,18 +36,18 @@ class Player(DefenderSprite):
         :param pressed_keys: tuple or bool
         :return: void
         """
-        if pressed_keys[K_UP]:
+        if pressed_keys[self.K_UP]:
             self.rect.move_ip(0, -5)
-        if pressed_keys[K_DOWN]:
+        if pressed_keys[self.K_DOWN]:
             self.rect.move_ip(0, 5)
-        if pressed_keys[K_LEFT]:
+        if pressed_keys[self.K_LEFT]:
             self.rect.move_ip(-5, 0)
             self.rect.move_ip(self.x_change, 0)
             self.accel_x = -.2
             if self.forward:
                 self.surf = transform.flip(self.surf, True, False)
             self.forward = False
-        if pressed_keys[K_RIGHT]:
+        if pressed_keys[self.K_RIGHT]:
             self.rect.move_ip(5, 0)
             self.accel_x = .2
             self.rect.move_ip(self.x_change, 0)
@@ -83,7 +76,7 @@ class Enemy(DefenderSprite):
         self.x = self.SCREEN_WIDTH / 100 * 2
         self.y = self.x
         self.surf = image.load("Assets" + sep + "enemy.PNG").convert()
-        self.surf.set_colorkey(self.WHITE, RLEACCEL)
+        self.surf.set_colorkey(self.WHITE, self.RLEACCEL)
         self.surf = transform.scale(self.surf, (self.x, self.y))
         self.forward = random.choice([True, False])
         self.upward = random.choice([True, False])
@@ -131,8 +124,6 @@ class Enemy(DefenderSprite):
             self.kill()
         elif self.rect.left > self.SCREEN_WIDTH and self.forward and self.axis == "x":
             self.kill()
-        # elif self.rect.top+20 > self.SCREEN_HEIGHT and not self.upward and self.axis == "y":
-        #     self.kill()
         elif self.rect.bottom < -20 and self.upward and self.axis == "y":
             self.kill()
 
@@ -146,7 +137,7 @@ class Projectile(DefenderSprite):
         super().__init__()
         self.forward = forward
         self.surf = image.load("Assets" + sep + "projectile.PNG").convert()
-        self.surf.set_colorkey(self.WHITE, RLEACCEL)
+        self.surf.set_colorkey(self.WHITE, self.RLEACCEL)
         self.surf = transform.scale(self.surf, (self.SCREEN_WIDTH / 100 * 3, 10))
         self.rect = rect
         self.speed = 50  # random.randint(50, 80)

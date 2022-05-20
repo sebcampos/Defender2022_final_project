@@ -1,4 +1,5 @@
-from pygame import init, quit, display, FULLSCREEN
+from pygame import init, quit, display, image, transform, FULLSCREEN
+from os.path import sep
 from DB import DatabaseManager
 from pygame.locals import (
     RLEACCEL,
@@ -51,6 +52,7 @@ class GameConstants:
     K_BACKSPACE = K_BACKSPACE
     K_RETURN = K_RETURN
     KEYUP = KEYUP
+    MENU_IMAGE = transform.scale(image.load("assets"+sep+"Level1.jpg"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     @classmethod
     def continue_to_main_game(cls):
