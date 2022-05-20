@@ -1,7 +1,7 @@
 import random
 from os.path import sep
 from constants import GameConstants, Colors
-from pygame import image, transform
+from pygame import image, transform, Rect
 from pygame.sprite import Sprite
 
 
@@ -106,7 +106,7 @@ class Enemy(DefenderSprite):
         )
         self.speed = random.randint(1, 5)
 
-    def update(self):
+    def update(self) -> None:
         """
         This method moves the Enemy instance up or down the x or y axis
         at the speed of the instance `speed` attribute
@@ -133,7 +133,7 @@ class Projectile(DefenderSprite):
     This Class represents the projectile that will be shot from the Player isntance's
     position
     """
-    def __init__(self, forward, rect):
+    def __init__(self, forward: bool, rect: Rect) -> None:
         super().__init__()
         self.forward = forward
         self.surf = image.load("Assets" + sep + "projectile.PNG").convert()
@@ -144,7 +144,7 @@ class Projectile(DefenderSprite):
         if not forward:
             self.surf = transform.flip(self.surf, True, False)
 
-    def update(self):
+    def update(self) -> None:
         """
         This method moves the projectile defined by the speed attribute forward or backwards along the x axis
         :return: void

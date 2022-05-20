@@ -1,4 +1,4 @@
-from pygame import mouse, draw, image, font, transform, Rect, Color
+from pygame import mouse, draw, image, font, transform, Rect, Color, Surface, Font
 from constants import GameConstants, Colors
 from os import path
 import time
@@ -24,9 +24,18 @@ class Widget(GameConstants, Rect, Colors):
         super().__init__(x, y, width, height, **kwargs)
 
     def get_size(self) -> tuple:
+        """
+        This method returns the size attributes as a tuple
+        :return: tuple containing size and position
+        """
         return self.left, self.top, self.right, self.bottom
 
     def is_over(self) -> bool:
+        """
+        This method returns a bool based on wheter or not the mouse postion
+        is over the widget
+        :return:
+        """
         pos = mouse.get_pos()
         if self.collidepoint(pos[0], pos[1]):
             return True
@@ -34,6 +43,15 @@ class Widget(GameConstants, Rect, Colors):
 
     @staticmethod
     def calculate_center(x1, x2, y1, y2) -> tuple:
+        """
+        This method calculates the coordinates at the center
+        of the widget
+        :param x1:
+        :param x2:
+        :param y1:
+        :param y2:
+        :return:
+        """
         x = (x1 + x2) / 2
         x -= (x / 100 * 2)
         y = (y1 + y2) / 2
@@ -78,7 +96,7 @@ class InputBox(Widget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.color_active = Color('lightskyblue3')
-        self.color_passive = Colors.LIGHTER
+        self.color_passive = self.LIGHTER
         self.color = self.color_passive
         self.text_surface = None
         self.active = False
@@ -99,10 +117,10 @@ class InputBox(Widget):
 
     def add(self, screen, color) -> None:
         """
-        This method adds the button to the screen
-        :param screen: pygame screen
-        :param color: background color
-        :return:
+        Adds widget to screen
+        :param screen: pygame surface screen
+        :param color:
+        :return: void
         """
         draw.rect(screen, color, self)
         self.text_surface = self.base_font.render(self.user_text, True, self.WHITE)
@@ -119,7 +137,13 @@ class Paragraph(Widget):
         self.color_active = Color('lightskyblue3')
         self.title_txt = kwargs['text']
 
-    def add(self, screen, color):
+    def add(self, screen: Surface, color: Color) -> None:
+        """
+        Adds widget to screen
+        :param screen: pygame surface screen
+        :param color:
+        :return: void
+        """
         draw.rect(screen, color, self)
         if self.title_txt == "":
             return
@@ -127,7 +151,16 @@ class Paragraph(Widget):
         self.w = max(100, screen.get_size()[0] / 2)
 
     @staticmethod
-    def blit_text(surface, text, pos, font_text, color=Color('black')):
+    def blit_text(surface: Surface, text: str, pos: tuple, font_text: Font, color=Color('black')) -> int:
+        """
+        This method writes text to a screen on the rectagle (itself)
+        :param surface: pygame surface
+        :param text: str of text
+        :param pos: position for the text
+        :param font_text: the font of the text
+        :param color: the color of the text
+        :return: max length of the text integer
+        """
         words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
         space = font_text.size(' ')[0]  # The width of a space.
         max_width, max_height = surface.get_size()
@@ -149,46 +182,80 @@ class Paragraph(Widget):
 
 
 class PlayButton(Widget):
+    """
+    This class creates a Play button on the screen
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.text = self.base_font.render('Play', True, Colors.WHITE)
+        self.text = self.base_font.render('Play', True, self.WHITE)
         self.text_coords = self.calculate_center(self.x, self.x + self.width, self.y, self.y + self.height)
 
-    def add(self, screen, color):
+    def add(self, screen: Surface, color: Color) -> None:
+        """
+        Adds widget to screen
+        :param screen: pygame Screen surface
+        :param color: color of widget
+        :return: vpod
+        """
         draw.rect(screen, color, self)
         screen.blit(self.text, self.text_coords)
 
 
 class ScoreWidget(Widget):
+    """
+    This widget manages and displays the player score and time during the main game
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.score = 0
         self.time_score = None
         self.start_time = time.time()
-        self.number = self.base_font.render(str(self.score), True, Colors.WHITE)
+        self.number = self.base_font.render(str(self.score), True, self.WHITE)
         self.number_coords = (self.x / 100 * 50, self.y / 100 * 3)
-        self.timer = self.base_font.render("00:00:00", True, Colors.WHITE)
+        self.timer = self.base_font.render("00:00:00", True, self.WHITE)
         self.timer_coords = (self.x / 100 * 90, self.y / 100 * 3)
 
-    def update_score(self):
+    def update_score(self) -> None:
+        """
+        Updates score attribute
+        :return: Void
+        """
         self.score += 1
-        self.number = self.base_font.render(str(self.score), True, Colors.WHITE)
+        self.number = self.base_font.render(str(self.score), True, self.WHITE)
 
-    def show(self, screen):
+    def show(self, screen: Surface) -> None:
+        """
+        displays widget to screen with new attributes
+        :param screen:
+        :return:
+        """
         screen.blit(self.number, self.number_coords)
         screen.blit(self.timer, self.timer_coords)
 
-    def update_time(self):
+    def update_time(self) -> None:
+        """
+        Updates time attribute
+        :return: Void
+        """
         end_time = time.time()
         current_time = self.time_convert(end_time - self.start_time)
         self.time_score = current_time
-        self.timer = self.base_font.render(current_time, True, Colors.WHITE)
+        self.timer = self.base_font.render(current_time, True, self.WHITE)
 
-    def final_score(self):
+    def final_score(self) -> tuple:
+        """
+        returns final score
+        :return: tuple with score and time score
+        """
         return self.score, self.time_score
 
     @staticmethod
-    def time_convert(sec):
+    def time_convert(sec) -> str:
+        """
+        Converts the time difference into a readable format
+        :param sec: seconds passed
+        :return: string representation of seconds passed in 00:00:00 format
+        """
         minute = sec // 60
         sec = sec % 60
         hours = minute // 60
@@ -197,6 +264,9 @@ class ScoreWidget(Widget):
 
 
 class SideScroller(Widget):
+    """
+    This class creates backgrounds to pan left to right during the main game
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bgx = 0
@@ -204,16 +274,29 @@ class SideScroller(Widget):
         self.surf = image.load("Assets" + path.sep + "Level1.jpg")
         self.surf = transform.scale(self.surf, (self.x, self.y))
 
-    def add(self, screen):
+    def add(self, screen: Surface) -> None:
+        """
+        Adds Widget to main screen
+        :param screen: pygame screen surface
+        :return: void
+        """
         screen.blit(self.surf, (self.bgx, 0))
 
-    def slide(self):
+    def slide(self) -> None:
+        """
+        This method handles the scrolling/panning logic for the screen backround
+        :return: void
+        """
         self.bgx -= 1
         if self.bgx <= -self.SCREEN_WIDTH * 2:
             self.bgx = 0
             self.next_level()
 
-    def next_level(self):
+    def next_level(self) -> None:
+        """
+        This method changes the backround
+        :return: void
+        """
         if self.level == 5 or self.level == 0:
             self.level = 1
             self.surf = image.load("Assets" + path.sep + "Level1.jpg")

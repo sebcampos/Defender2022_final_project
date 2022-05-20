@@ -124,10 +124,10 @@ class Game(GameConstants, Colors):
             title.add(self.SCREEN, self.LIGHTER)
             display.flip()
 
-    def main_game(self):
+    def main_game(self) -> tuple:
         """
         This method runs the main game
-        :return: void
+        :return: tuple of player score and time score
         """
         time.set_timer(self.ADD_ENEMY, 1000)  # timer manages event triggers
         display.set_caption("Defender 2022!")
@@ -152,7 +152,13 @@ class Game(GameConstants, Colors):
         self.continue_to_final_menu()
         return sw.final_score()
 
-    def final_menu(self, score, time_score):
+    def final_menu(self, score, time_score) -> None:
+        """
+        The final menu loop
+        :param score: player score
+        :param time_score: player time score
+        :return:
+        """
         display.set_caption("Thanks For Playing!")
         title_txt = f"Thanks For Playing!\n\nPlease Enter Your Name Below\n\nScore: {score}\n\nTime: {time_score}"
         title = Paragraph(30, 5, 400, 400, text=title_txt)
@@ -180,13 +186,21 @@ class Game(GameConstants, Colors):
         self.reset_groups()
         self.run()
 
-    def reset_groups(self):
+    def reset_groups(self) -> None:
+        """
+        Reset instance sprite groups
+        :return: void
+        """
         self.ALL_GROUP = Group()
         self.ENEMY_GROUP = Group()
         self.PLAYER_GROUP = Group()
         self.PROJECTILE_GROUP = Group()
 
-    def run(self):
+    def run(self) -> None:
+        """
+        Run application loops
+        :return:
+        """
         self.menu()
         self.GAME_RUNNING = True
         score, time_score = self.main_game()
