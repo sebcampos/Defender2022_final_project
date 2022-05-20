@@ -138,11 +138,11 @@ class Game(GameConstants, Colors):
         while self.GAME_RUNNING:
             ss.add(self.SCREEN)
             ss.slide()
-            for e in event.get(): # this event handler
+            for e in event.get():  # this event handler
                 self.event_handler(e, score_widget=sw, player=player)
             player.x_change += player.accel_x
             if abs(player.x_change) >= player.max_speed:
-                player.x_change = player.x_change/abs(player.x_change) * player.max_speed
+                player.x_change = player.x_change / abs(player.x_change) * player.max_speed
             if player.accel_x == 0:
                 player.x_change *= 0.92
             sw.show(self.SCREEN)

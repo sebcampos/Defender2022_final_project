@@ -1,4 +1,5 @@
-from pygame import mouse, draw, image, font, transform, Rect, Color, Surface, Font
+from pygame import mouse, draw, image, font, transform, Rect, Color, Surface
+from pygame.font import Font
 from constants import GameConstants, Colors
 from os import path
 import time
@@ -250,7 +251,7 @@ class ScoreWidget(Widget):
         return self.score, self.time_score
 
     @staticmethod
-    def time_convert(sec) -> str:
+    def time_convert(sec: int) -> str:
         """
         Converts the time difference into a readable format
         :param sec: seconds passed
