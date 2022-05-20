@@ -52,7 +52,8 @@ class GameConstants:
     K_BACKSPACE = K_BACKSPACE
     K_RETURN = K_RETURN
     KEYUP = KEYUP
-    MENU_IMAGE = transform.scale(image.load("assets"+sep+"Level1.jpg"), (SCREEN_WIDTH, SCREEN_HEIGHT))
+    MENU_IMAGE = transform.scale(image.load("Assets"+sep+"Level1.jpg"), (SCREEN_WIDTH, SCREEN_HEIGHT))
+    FINAL_MENU_IMAGE = transform.scale(image.load("Assets"+sep+"Level5.jpg"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     @classmethod
     def continue_to_main_game(cls):

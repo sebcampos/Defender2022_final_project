@@ -172,7 +172,7 @@ class Game(GameConstants, Colors):
                     name = txt.user_text
                     self.db.add_high_score(name, score, time_score)
                     self.reset_game()
-            self.SCREEN.fill(Colors.WHITE)
+            self.SCREEN.blit(self.FINAL_MENU_IMAGE, (0, 0))
             title.add(self.SCREEN, Colors.ORANGE)
             txt.add(self.SCREEN, txt.color)
             display.flip()
