@@ -2,6 +2,17 @@
 
 A final project for the intro to python class
 
+# Requirements
+- Python 3.12
+- PyGame
+
+# How to play
+- Clone repo
+- Run `python -m venv .venv` in the repo
+- On Windows activate venv `.\.venv\Scripts\activate`
+- install pygame `pip install pygame`
+- Run with `python Defender2022`
+
 ## Resources
 - https://realpython.com/pygame-a-primer/
 - https://youtu.be/93Ao51_2MF0
